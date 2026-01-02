@@ -561,13 +561,44 @@
     });
 
     function showPage(pageId) {
-      document.querySelectorAll(".page").forEach(p => p.style.display = "none");
-      document.getElementById(pageId).style.display = "block";
-      
-      // Close mobile menu if open
-      if (window.innerWidth <= 768) {
-        document.querySelector(".menu").style.display = "none";
-      }
+  document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+  document.getElementById(pageId).style.display = "block";
+  
+  if (pageId === 'berita') {
+    tampilkanBeritaDiWebUtama();
+  }
+  
+  if (window.innerWidth <= 768) {
+    document.querySelector(".menu").style.display = "none";
+  }
+    }
+    function tampilkanBeritaDiWebUtama() {
+  const beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');
+  const newsList = document.getElementById("news-list");
+  
+  if (beritaList.length === 0) {
+    newsList.innerHTML = `
+      <div class="berita">
+        <h3>Selamat Datang di Portal Berita VRX</h3>
+        <h4>Update terbaru dari komunitas</h4>
+        <p>Halaman ini akan menampilkan berita dan pengumuman terkini dari Vive Re Xion. Pantau terus untuk informasi kegiatan, event, dan pengumuman penting lainnya.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  let html = '';
+  beritaList.forEach(berita => {
+    html += `
+      <div class="berita">
+        <h3>${berita.judul}</h3>
+        <h4>${berita.subjudul} • ${berita.tanggal}</h4>
+        <p>${berita.deskripsi}</p>
+      </div>
+    `;
+  });
+  
+  newsList.innerHTML = html;
     }
   </script>
 </body>
