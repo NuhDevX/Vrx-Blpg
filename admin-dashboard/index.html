@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+  const firebaseConfig = {
+    databaseURL: "https://vrx-web-base.firebaseio.com"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+</script>
+  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vive Re Xion | Admin Dashboard</title>
@@ -549,60 +560,36 @@
     }
 
     function simpanBerita() {
-      const judul = document.getElementById("judul").value;
-      const subjudul = document.getElementById("subjudul").value;
-      const deskripsi = document.getElementById("deskripsi").value;
+  const judul = document.getElementById("judul").value;
+  const subjudul = document.getElementById("subjudul").value;
+  const deskripsi = document.getElementById("deskripsi").value;
 
-      if (!judul || !subjudul || !deskripsi) {
-        alert("Mohon lengkapi semua field!");
-        return;
-      }
+  if (!judul || !subjudul || !deskripsi) {
+    alert("Mohon lengkapi semua field!");
+    return;
+  }
 
-      let beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');
-      
-      if (editMode && editId) {
-        const index = beritaList.findIndex(b => b.id === editId);
-        if (index !== -1) {
-          beritaList[index] = {
-            ...beritaList[index],
-            judul: judul,
-            subjudul: subjudul,
-            deskripsi: deskripsi,
-            foto: currentImageData,
-            tanggal: new Date().toLocaleDateString('id-ID', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            })
-          };
-        }
-      } else {
-        const beritaBaru = {
-          id: Date.now(),
-          judul: judul,
-          subjudul: subjudul,
-          deskripsi: deskripsi,
-          foto: currentImageData,
-          tanggal: new Date().toLocaleDateString('id-ID', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          })
-        };
-        beritaList.unshift(beritaBaru);
-      }
-      
-      localStorage.setItem('beritaVRX', JSON.stringify(beritaList));
-      tampilkanBerita();
-      closeForm();
-      alert(editMode ? '✅ Berita berhasil diupdate!' : '✅ Berita berhasil diposting!');
-    }
+  const tanggal = new Date().toLocaleDateString('id-ID', { 
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+
+  const dataBerita = {
+    judul, subjudul, deskripsi,
+    foto: currentImageData,
+    tanggal: tanggal,
+    timestamp: Date.now()
+  };
+
+  if (editMode && editId) {
+    database.ref('berita/' + editId).update(dataBerita)
+      .then(() => { alert("Berita Berhasil Diupdate!"); closeForm(); });
+  } else {
+    database.ref('berita').push(dataBerita)
+      .then(() => { alert("Berita Berhasil Diposting!"); closeForm(); });
+  }
+}
+
 
     function hapusBerita() {
       if (!confirm('Apakah Anda yakin ingin menghapus berita ini?')) {
