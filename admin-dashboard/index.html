@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Vive Re Xion</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(230,240,255,0.95) 100%);
+      backdrop-filter: blur(10px);
+      padding: 1.5rem 2rem;
+      box-shadow: 0 4px 20px rgba(102,126,234,0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid rgba(102,126,234,0.2);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-info {
+      background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      color: #667eea;
+      font-weight: 500;
+    }
+
+    .logout-btn {
+      background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(229,62,62,0.3);
+    }
+
+    .logout-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(229,62,62,0.4);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+
+    /* Dashboard Card */
+    .dashboard {
+      background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(240,245,255,0.98) 100%);
+      backdrop-filter: blur(20px);
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(102,126,234,0.3);
+      border: 1px solid rgba(102,126,234,0.2);
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .greeting {
+      font-size: 2rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    /* News Area */
+    #news-area {
+      margin-top: 2rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      background: linear-gradient(135deg, rgba(102,126,234,0.05) 0%, rgba(118,75,162,0.05) 100%);
+      border-radius: 15px;
+      border: 2px dashed rgba(102,126,234,0.3);
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state-text {
+      color: #667eea;
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 20px rgba(102,126,234,0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(102,126,234,0.4);
+    }
+
+    /* Form Area */
+    #form-area {
+      background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(240,245,255,0.98) 100%);
+      padding: 2rem;
+      border-radius: 15px;
+      margin-top: 2rem;
+      box-shadow: 0 10px 40px rgba(102,126,234,0.3);
+      border: 1px solid rgba(102,126,234,0.2);
+      animation: slideDown 0.4s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-title {
+      font-size: 1.5rem;
+      color: #667eea;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      color: #667eea;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px dashed rgba(102,126,234,0.3);
+      border-radius: 10px;
+      background: rgba(102,126,234,0.05);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    input[type="file"]:hover {
+      border-color: #667eea;
+      background: rgba(102,126,234,0.1);
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid rgba(102,126,234,0.2);
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: rgba(255,255,255,0.8);
+      color: #4a5568;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 5px 20px rgba(102,126,234,0.2);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
+      color: #667eea;
+      border: 2px solid #667eea;
+      padding: 0.8rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, rgba(102,126,234,0.2) 0%, rgba(118,75,162,0.2) 100%);
+      transform: translateY(-2px);
+    }
+
+    /* Success Message */
+    .success {
+      background: linear-gradient(135deg, rgba(72,187,120,0.1) 0%, rgba(56,178,172,0.1) 100%);
+      border: 2px solid #48bb78;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: slideDown 0.4s ease;
+    }
+
+    .success-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .success-icon {
+      font-size: 1.8rem;
+    }
+
+    .success-text {
+      color: #2f855a;
+      font-weight: 600;
+    }
+
+    .btn-ok {
+      background: #48bb78;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-ok:hover {
+      background: #38a169;
+      transform: translateY(-2px);
+    }
+
+    /* News Item */
+    .berita {
+      background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,245,255,0.9) 100%);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(102,126,234,0.2);
+      border-left: 4px solid #667eea;
+      margin-bottom: 1.5rem;
+      animation: slideDown 0.4s ease;
+    }
+
+    .berita h3 {
+      color: #667eea;
+      margin-bottom: 0.5rem;
+      font-size: 1.5rem;
+    }
+
+    .berita h4 {
+      color: #764ba2;
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+
+    .berita p {
+      color: #4a5568;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .header-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .dashboard {
+        padding: 2rem 1.5rem;
+      }
+
+      .greeting {
+        font-size: 1.5rem;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+
+      .btn-secondary,
+      .btn-primary {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo">Vive Re Xion</div>
+      <span style="color: #667eea;">• Admin Dashboard</span>
+    </div>
+    <div class="header-right">
+      <div class="user-info">👤 <span id="username-display">Admin</span></div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Container -->
+  <div class="container">
+    <div class="dashboard">
+      <h2 class="greeting" id="greeting"></h2>
+      
+      <div id="news-area">
+        <div class="empty-state">
+          <div class="empty-state-icon">📰</div>
+          <div class="empty-state-text">Belum ada berita. Silahkan posting sesuatu di sini!</div>
+          <button class="btn-primary" onclick="openForm()">✏️ Buat Berita Baru</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Buat Berita -->
+    <div id="form-area" style="display:none;">
+      <h3 class="form-title">📝 Buat Berita Baru</h3>
+      
+      <div class="form-group">
+        <label for="foto">📷 Upload Foto (Opsional)</label>
+        <input type="file" id="foto" accept="image/*">
+      </div>
+      
+      <div class="form-group">
+        <label for="judul">📌 Judul Berita</label>
+        <input type="text" id="judul" placeholder="Masukkan judul berita...">
+      </div>
+      
+      <div class="form-group">
+        <label for="subjudul">📍 Sub Judul</label>
+        <input type="text" id="subjudul" placeholder="Masukkan sub judul...">
+      </div>
+      
+      <div class="form-group">
+        <label for="deskripsi">📄 Deskripsi</label>
+        <textarea id="deskripsi" placeholder="Tulis deskripsi berita lengkap di sini..."></textarea>
+      </div>
+      
+      <div class="form-actions">
+        <button class="btn-secondary" onclick="closeForm()">Batal</button>
+        <button class="btn-primary" onclick="postBerita()">🚀 Posting Berita</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+      
+      if (!isLoggedIn || isLoggedIn !== 'true') {
+        window.location.href = 'https://vrx-blpg.vercel.app/admin-login/index.html?error=not_logged_in';
+        return;
+      }
+
+      const username = sessionStorage.getItem('username');
+      if (username) {
+        document.getElementById('username-display').textContent = username;
+      }
+
+      greetingMessage();
+    });
+
+    function greetingMessage() {
+      const jam = new Date().getHours();
+      let greet = "pagi";
+      let icon = "🌅";
+      
+      if (jam >= 10 && jam < 15) {
+        greet = "siang";
+        icon = "☀️";
+      } else if (jam >= 15 && jam < 18) {
+        greet = "sore";
+        icon = "🌤️";
+      } else if (jam >= 18) {
+        greet = "malam";
+        icon = "🌙";
+      }
+      
+      const username = sessionStorage.getItem('username') || 'Admin';
+      document.getElementById("greeting").innerHTML = `${icon} Hai, ${username}! Selamat ${greet}`;
+    }
+
+    function openForm() {
+      document.getElementById("form-area").style.display = "block";
+      document.getElementById("form-area").scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function closeForm() {
+      document.getElementById("form-area").style.display = "none";
+      document.getElementById("foto").value = "";
+      document.getElementById("judul").value = "";
+      document.getElementById("subjudul").value = "";
+      document.getElementById("deskripsi").value = "";
+    }
+
+    function postBerita() {
+      const judul = document.getElementById("judul").value;
+      const subjudul = document.getElementById("subjudul").value;
+      const deskripsi = document.getElementById("deskripsi").value;
+
+      if (!judul || !subjudul || !deskripsi) {
+        alert("Mohon lengkapi semua field!");
+        return;
+      }
+
+      document.getElementById("news-area").innerHTML = `
+        <div class="success">
+          <div class="success-content">
+            <span class="success-icon">✅</span>
+            <span class="success-text">Berhasil memposting "${judul}"</span>
+          </div>
+          <button class="btn-ok" onclick="location.reload()">Oke</button>
+        </div>
+        <div class="berita">
+          <h3>${judul}</h3>
+          <h4>${subjudul}</h4>
+          <p>${deskripsi}</p>
+        </div>
+        <div style="text-align: center; margin-top: 2rem;">
+          <button class="btn-primary" onclick="openForm()">✏️ Tambahkan Berita Lainnya</button>
+        </div>
+      `;
+
+      closeForm();
+      
+      document.getElementById("news-area").scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function logout() {
+      if (confirm('Apakah Anda yakin ingin logout?')) {
+        sessionStorage.removeItem('isLoggedIn');
+        sessionStorage.removeItem('username');
+        window.location.href = 'https://vrx-blpg.vercel.app/admin-login/index.html';
+      }
+    }
+  </script>
+</body>
+  </html>
