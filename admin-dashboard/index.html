@@ -437,6 +437,40 @@
 
       greetingMessage();
     });
+    function tampilkanBerita() {
+  const beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');
+  const newsArea = document.getElementById("news-area");
+  
+  if (beritaList.length === 0) {
+    newsArea.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📰</div>
+        <div class="empty-state-text">Belum ada berita. Silahkan posting sesuatu di sini!</div>
+        <button class="btn-primary" onclick="openForm()">✏️ Buat Berita Baru</button>
+      </div>
+    `;
+    return;
+  }
+  
+  let html = '<div style="text-align: center; margin-bottom: 2rem;"><button class="btn-primary" onclick="openForm()">✏️ Tambah Berita Baru</button></div>';
+  
+  beritaList.forEach(berita => {
+    html += `
+      <div class="berita">
+        <h3>${berita.judul}</h3>
+        <h4>${berita.subjudul} • ${berita.tanggal}</h4>
+        <p>${berita.deskripsi}</p>
+      </div>
+    `;
+  });
+  
+  newsArea.innerHTML = html;
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+ 
+  tampilkanBerita(); 
+});
 
     function greetingMessage() {
       const jam = new Date().getHours();
@@ -471,37 +505,35 @@
       document.getElementById("deskripsi").value = "";
     }
 
+    
+
     function postBerita() {
-      const judul = document.getElementById("judul").value;
-      const subjudul = document.getElementById("subjudul").value;
-      const deskripsi = document.getElementById("deskripsi").value;
+  const judul = document.getElementById("judul").value;
+  const subjudul = document.getElementById("subjudul").value;
+  const deskripsi = document.getElementById("deskripsi").value;
 
-      if (!judul || !subjudul || !deskripsi) {
-        alert("Mohon lengkapi semua field!");
-        return;
-      }
+  if (!judul || !subjudul || !deskripsi) {
+    alert("Mohon lengkapi semua field!");
+    return;
+  }
 
-      document.getElementById("news-area").innerHTML = `
-        <div class="success">
-          <div class="success-content">
-            <span class="success-icon">✅</span>
-            <span class="success-text">Berhasil memposting "${judul}"</span>
-          </div>
-          <button class="btn-ok" onclick="location.reload()">Oke</button>
-        </div>
-        <div class="berita">
-          <h3>${judul}</h3>
-          <h4>${subjudul}</h4>
-          <p>${deskripsi}</p>
-        </div>
-        <div style="text-align: center; margin-top: 2rem;">
-          <button class="btn-primary" onclick="openForm()">✏️ Tambahkan Berita Lainnya</button>
-        </div>
-      `;
+  let beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');
+  
+  const beritaBaru = {
+    id: Date.now(),
+    judul: judul,
+    subjudul: subjudul,
+    deskripsi: deskripsi,
+    tanggal: new Date().toLocaleDateString('id-ID')
+  };
+  
+  beritaList.unshift(beritaBaru); 
+  localStorage.setItem('beritaVRX', JSON.stringify(beritaList));
 
-      closeForm();
-      
-      document.getElementById("news-area").scrollIntoView({ behavior: 'smooth' });
+  tampilkanBerita();
+  closeForm();
+  
+  alert('✅ Berita berhasil diposting!');
     }
 
     function logout() {
