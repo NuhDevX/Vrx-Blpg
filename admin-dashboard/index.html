@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vive Re Xion| Admin Dashboard</title>
+  <title>Vive Re Xion | Admin Dashboard</title>
   <style>
     * {
       margin: 0;
@@ -18,7 +18,6 @@
       min-height: 100vh;
     }
 
-    /* Header */
     .header {
       background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(230,240,255,0.95) 100%);
       backdrop-filter: blur(10px);
@@ -76,14 +75,12 @@
       box-shadow: 0 6px 20px rgba(229,62,62,0.4);
     }
 
-    /* Container */
     .container {
       max-width: 1200px;
       margin: 2rem auto;
       padding: 0 2rem;
     }
 
-    /* Dashboard Card */
     .dashboard {
       background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(240,245,255,0.98) 100%);
       backdrop-filter: blur(20px);
@@ -115,7 +112,6 @@
       text-align: center;
     }
 
-    /* News Area */
     #news-area {
       margin-top: 2rem;
     }
@@ -157,7 +153,6 @@
       box-shadow: 0 8px 30px rgba(102,126,234,0.4);
     }
 
-    /* Form Area */
     #form-area {
       background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(240,245,255,0.98) 100%);
       padding: 2rem;
@@ -261,51 +256,22 @@
       transform: translateY(-2px);
     }
 
-    /* Success Message */
-    .success {
-      background: linear-gradient(135deg, rgba(72,187,120,0.1) 0%, rgba(56,178,172,0.1) 100%);
-      border: 2px solid #48bb78;
-      padding: 1.5rem;
-      border-radius: 12px;
-      margin-bottom: 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      animation: slideDown 0.4s ease;
-    }
-
-    .success-content {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .success-icon {
-      font-size: 1.8rem;
-    }
-
-    .success-text {
-      color: #2f855a;
-      font-weight: 600;
-    }
-
-    .btn-ok {
-      background: #48bb78;
+    .btn-danger {
+      background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
       color: white;
       border: none;
-      padding: 0.6rem 1.5rem;
-      border-radius: 8px;
+      padding: 0.8rem 1.5rem;
+      border-radius: 10px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
     }
 
-    .btn-ok:hover {
-      background: #38a169;
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #c53030 0%, #9b2c2c 100%);
       transform: translateY(-2px);
     }
 
-    /* News Item */
     .berita {
       background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,245,255,0.9) 100%);
       padding: 2rem;
@@ -313,7 +279,14 @@
       box-shadow: 0 5px 20px rgba(102,126,234,0.2);
       border-left: 4px solid #667eea;
       margin-bottom: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
       animation: slideDown 0.4s ease;
+    }
+
+    .berita:hover {
+      transform: translateX(10px);
+      box-shadow: 0 8px 30px rgba(102,126,234,0.3);
     }
 
     .berita h3 {
@@ -331,6 +304,23 @@
     .berita p {
       color: #4a5568;
       line-height: 1.6;
+    }
+
+    .berita-image {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .image-preview {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-top: 1rem;
+      display: none;
     }
 
     @media (max-width: 768px) {
@@ -357,48 +347,41 @@
       }
 
       .btn-secondary,
-      .btn-primary {
+      .btn-primary,
+      .btn-danger {
         width: 100%;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
   <div class="header">
-    <div class="header-left"><div class="logo">
-      <img src="https://raw.githubusercontent.com/NuhDevX/Vrx-Blpg/main/img/black-logo.png" alt="VRX Logo" style="height: 30px; vertical-align: middle; margin-right: 10px;">
-      Vive Re Xion
-    </div>
+    <div class="header-left">
+      <div class="logo">
+        <img src="https://raw.githubusercontent.com/NuhDevX/Vrx-Blpg/main/img/black-logo.png" alt="VRX Logo" style="height: 30px; vertical-align: middle; margin-right: 10px;">
+        Vive Re Xion
+      </div>
       <span style="color: #667eea;">• Admin Dashboard</span>
     </div>
     <div class="header-right">
-      <div class="user-info">👤 <span id="username-display">Admin</span></div>
+      <div class="user-info">👤 <span id="username-display"></span></div>
       <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
   </div>
 
-  <!-- Container -->
   <div class="container">
     <div class="dashboard">
       <h2 class="greeting" id="greeting"></h2>
-      
-      <div id="news-area">
-        <div class="empty-state">
-          <div class="empty-state-icon">📰</div>
-          <div class="empty-state-text">Belum ada berita. Silahkan posting sesuatu di sini!</div>
-          <button class="btn-primary" onclick="openForm()">✏️ Buat Berita Baru</button>
-        </div>
-      </div>
+      <div id="news-area"></div>
     </div>
 
-    <!-- Form Buat Berita -->
     <div id="form-area" style="display:none;">
-      <h3 class="form-title">📝 Buat Berita Baru</h3>
+      <h3 class="form-title" id="form-title">📝 Buat Berita Baru</h3>
       
       <div class="form-group">
         <label for="foto">📷 Upload Foto (Opsional)</label>
-        <input type="file" id="foto" accept="image/*">
+        <input type="file" id="foto" accept="image/*" onchange="previewImage(event)">
+        <img id="image-preview" class="image-preview" alt="Preview">
       </div>
       
       <div class="form-group">
@@ -417,16 +400,20 @@
       </div>
       
       <div class="form-actions">
-        <button class="btn-secondary" onclick="closeForm()">Batal</button>
-        <button class="btn-primary" onclick="postBerita()">🚀 Posting Berita</button>
+        <button class="btn-secondary" onclick="closeForm()">Batalkan</button>
+        <button class="btn-danger" id="btn-hapus" onclick="hapusBerita()" style="display:none;">🗑️ Hapus</button>
+        <button class="btn-primary" onclick="simpanBerita()">🚀 Posting</button>
       </div>
     </div>
   </div>
 
   <script>
+    let editMode = false;
+    let editId = null;
+    let currentImageData = null;
+
     window.addEventListener('DOMContentLoaded', () => {
       const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-      
       if (!isLoggedIn || isLoggedIn !== 'true') {
         window.location.href = 'https://vrx-blpg.vercel.app/admin-login/?error=not_logged_in';
         return;
@@ -438,41 +425,54 @@
       }
 
       greetingMessage();
+      tampilkanBerita();
     });
-    function tampilkanBerita() {
-  const beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');
-  const newsArea = document.getElementById("news-area");
-  
-  if (beritaList.length === 0) {
-    newsArea.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state-icon">📰</div>
-        <div class="empty-state-text">Belum ada berita. Silahkan posting sesuatu di sini!</div>
-        <button class="btn-primary" onclick="openForm()">✏️ Buat Berita Baru</button>
-      </div>
-    `;
-    return;
-  }
-  
-  let html = '<div style="text-align: center; margin-bottom: 2rem;"><button class="btn-primary" onclick="openForm()">✏️ Tambah Berita Baru</button></div>';
-  
-  beritaList.forEach(berita => {
-    html += `
-      <div class="berita">
-        <h3>${berita.judul}</h3>
-        <h4>${berita.subjudul} • ${berita.tanggal}</h4>
-        <p>${berita.deskripsi}</p>
-      </div>
-    `;
-  });
-  
-  newsArea.innerHTML = html;
-}
 
-window.addEventListener('DOMContentLoaded', () => {
- 
-  tampilkanBerita(); 
-});
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentImageData = e.target.result;
+          const preview = document.getElementById('image-preview');
+          preview.src = currentImageData;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function tampilkanBerita() {
+      const beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');
+      const newsArea = document.getElementById("news-area");
+      
+      if (beritaList.length === 0) {
+        newsArea.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📰</div>
+            <div class="empty-state-text">Belum ada berita. Silahkan posting sesuatu di sini!</div>
+            <button class="btn-primary" onclick="openForm()">✏️ Buat Berita Baru</button>
+          </div>
+        `;
+        return;
+      }
+      
+      let html = '<div style="text-align: center; margin-bottom: 2rem;"><button class="btn-primary" onclick="openForm()">✏️ Tambah Berita Baru</button></div>';
+      
+      beritaList.forEach(berita => {
+        html += `
+          <div class="berita" onclick="editBerita(${berita.id})">
+            ${berita.foto ? `<img src="${berita.foto}" class="berita-image" alt="${berita.judul}">` : ''}
+            <h3>${berita.judul}</h3>
+            <h4>${berita.subjudul}</h4>
+            <p>${berita.deskripsi.substring(0, 200)}${berita.deskripsi.length > 200 ? '...' : ''}</p>
+            <p style="color: #764ba2; font-size: 0.9rem; margin-top: 1rem;">Dibuat atau diedit pada ${berita.tanggal}</p>
+          </div>
+        `;
+      });
+      
+      newsArea.innerHTML = html;
+    }
 
     function greetingMessage() {
       const jam = new Date().getHours();
@@ -495,8 +495,44 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     function openForm() {
+      editMode = false;
+      editId = null;
+      currentImageData = null;
+      document.getElementById("form-title").textContent = "📝 Buat Berita Baru";
+      document.getElementById("btn-hapus").style.display = "none";
       document.getElementById("form-area").style.display = "block";
       document.getElementById("form-area").scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function editBerita(id) {
+      const beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');
+      const berita = beritaList.find(b => b.id === id);
+      
+      if (!berita) return;
+      
+      editMode = true;
+      editId = id;
+      currentImageData = berita.foto || null;
+      
+      document.getElementById("form-title").textContent = "✏️ Edit Berita";
+      document.getElementById("judul").value = berita.judul;
+      document.getElementById("subjudul").value = berita.subjudul;
+      document.getElementById("deskripsi").value = berita.deskripsi;
+      document.getElementById("btn-hapus").style.display = "inline-block";
+      
+      const preview = document.getElementById('image-preview');
+      if (berita.foto) {
+        preview.src = berita.foto;
+        preview.style.display = 'block';
+      } else {
+        preview.style.display = 'none';
+      }
+      
+      document.getElementById("form-area").style.display = "block";
+      document.getElementById("form-area").scrollIntoView({ behavior: 'smooth' });
+      
+      const judulSlug = berita.judul.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      window.history.pushState({}, '', `/admin-dashboard/edit-berita/${judulSlug}`);
     }
 
     function closeForm() {
@@ -505,37 +541,81 @@ window.addEventListener('DOMContentLoaded', () => {
       document.getElementById("judul").value = "";
       document.getElementById("subjudul").value = "";
       document.getElementById("deskripsi").value = "";
+      document.getElementById("image-preview").style.display = "none";
+      editMode = false;
+      editId = null;
+      currentImageData = null;
+      window.history.pushState({}, '', '/admin-dashboard');
     }
 
-    
+    function simpanBerita() {
+      const judul = document.getElementById("judul").value;
+      const subjudul = document.getElementById("subjudul").value;
+      const deskripsi = document.getElementById("deskripsi").value;
 
-    function postBerita() {
-  const judul = document.getElementById("judul").value;
-  const subjudul = document.getElementById("subjudul").value;
-  const deskripsi = document.getElementById("deskripsi").value;
+      if (!judul || !subjudul || !deskripsi) {
+        alert("Mohon lengkapi semua field!");
+        return;
+      }
 
-  if (!judul || !subjudul || !deskripsi) {
-    alert("Mohon lengkapi semua field!");
-    return;
-  }
+      let beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');
+      
+      if (editMode && editId) {
+        const index = beritaList.findIndex(b => b.id === editId);
+        if (index !== -1) {
+          beritaList[index] = {
+            ...beritaList[index],
+            judul: judul,
+            subjudul: subjudul,
+            deskripsi: deskripsi,
+            foto: currentImageData,
+            tanggal: new Date().toLocaleDateString('id-ID', { 
+              weekday: 'long', 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })
+          };
+        }
+      } else {
+        const beritaBaru = {
+          id: Date.now(),
+          judul: judul,
+          subjudul: subjudul,
+          deskripsi: deskripsi,
+          foto: currentImageData,
+          tanggal: new Date().toLocaleDateString('id-ID', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })
+        };
+        beritaList.unshift(beritaBaru);
+      }
+      
+      localStorage.setItem('beritaVRX', JSON.stringify(beritaList));
+      tampilkanBerita();
+      closeForm();
+      alert(editMode ? '✅ Berita berhasil diupdate!' : '✅ Berita berhasil diposting!');
+    }
 
-  let beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');
-  
-  const beritaBaru = {
-    id: Date.now(),
-    judul: judul,
-    subjudul: subjudul,
-    deskripsi: deskripsi,
-    tanggal: new Date().toLocaleDateString('id-ID')
-  };
-  
-  beritaList.unshift(beritaBaru); 
-  localStorage.setItem('beritaVRX', JSON.stringify(beritaList));
-
-  tampilkanBerita();
-  closeForm();
-  
-  alert('✅ Berita berhasil diposting!');
+    function hapusBerita() {
+      if (!confirm('Apakah Anda yakin ingin menghapus berita ini?')) {
+        return;
+      }
+      
+      let beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');
+      beritaList = beritaList.filter(b => b.id !== editId);
+      localStorage.setItem('beritaVRX', JSON.stringify(beritaList));
+      
+      tampilkanBerita();
+      closeForm();
+      alert('🗑️ Berita berhasil dihapus!');
     }
 
     function logout() {
