@@ -653,30 +653,26 @@
   });
 }
 
+function tampilkanDetail(id) {
+  database.ref('berita/' + id).once('value').then((snapshot) => {
+    const berita = snapshot.val();
+    if (!berita) return;
 
-    function tampilkanDetail(id) {
-      const beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');
-      const berita = beritaList.find(b => b.id === id);
-      
-      if (!berita) return;
-      
-      document.querySelectorAll(".page").forEach(p => p.style.display = "none");
-      document.getElementById("detail-berita").style.display = "block";
-      
-      const detailContent = document.getElementById("detail-content");
-      detailContent.innerHTML = `
-        ${berita.foto ? `<img src="${berita.foto}" class="detail-image" alt="${berita.judul}">` : ''}
-        <h1>${berita.judul}</h1>
-        <h2 style="padding-left: 0; color: #764ba2; font-size: 1.3rem; margin-top: -1rem;">${berita.subjudul}</h2>
-        <p style="color: #667eea; font-style: italic; margin-bottom: 2rem;">📅 ${berita.tanggal}</p>
-        <p style="white-space: pre-wrap; line-height: 1.8;">${berita.deskripsi}</p>
-      `;
-      
-      const judulSlug = berita.judul.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      window.history.pushState({}, '', `/berita/detail/${judulSlug}`);
-      
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+    document.getElementById("detail-berita").style.display = "block";
+    
+    const detailContent = document.getElementById("detail-content");
+    detailContent.innerHTML = `
+      ${berita.foto ? `<img src="${berita.foto}" class="detail-image">` : ''}
+      <h1>${berita.judul}</h1>
+      <h2 style="color: #764ba2;">${berita.subjudul}</h2>
+      <p style="color: #667eea; font-style: italic;">📅 ${berita.tanggal}</p>
+      <p style="white-space: pre-wrap;">${berita.deskripsi}</p>
+    `;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+                     }
+            
 
     function kembaliKeBerita() {
       showPage('berita');
