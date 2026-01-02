@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - Vive Re Xion</title>
+  <title>Vive Re Xion| Admin Dashboard</title>
   <style>
     * {
       margin: 0;
@@ -366,8 +366,10 @@
 <body>
   <!-- Header -->
   <div class="header">
-    <div class="header-left">
-      <div class="logo">Vive Re Xion</div>
+    <div class="header-left"><div class="logo">
+      <img src="https://raw.githubusercontent.com/NuhDevX/Vrx-Blpg/main/img/black-logo.png" alt="VRX Logo" style="height: 30px; vertical-align: middle; margin-right: 10px;">
+      Vive Re Xion
+    </div>
       <span style="color: #667eea;">• Admin Dashboard</span>
     </div>
     <div class="header-right">
@@ -426,7 +428,7 @@
       const isLoggedIn = sessionStorage.getItem('isLoggedIn');
       
       if (!isLoggedIn || isLoggedIn !== 'true') {
-        window.location.href = 'https://vrx-blpg.vercel.app/admin-login/index.html?error=not_logged_in';
+        window.location.href = 'https://vrx-blpg.vercel.app/admin-login/?error=not_logged_in';
         return;
       }
 
@@ -489,7 +491,7 @@ window.addEventListener('DOMContentLoaded', () => {
       }
       
       const username = sessionStorage.getItem('username') || 'Admin';
-      document.getElementById("greeting").innerHTML = `${icon} Hai, ${username}! Selamat ${greet}`;
+      document.getElementById("greeting").innerHTML = `Hai, ${username}! Selamat ${greet} ${icon}`;
     }
 
     function openForm() {
@@ -540,7 +542,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if (confirm('Apakah Anda yakin ingin logout?')) {
         sessionStorage.removeItem('isLoggedIn');
         sessionStorage.removeItem('username');
-        window.location.href = 'https://vrx-blpg.vercel.app/admin-login/index.html';
+        window.location.href = 'https://vrx-blpg.vercel.app/admin-login';
       }
     }
   </script>
