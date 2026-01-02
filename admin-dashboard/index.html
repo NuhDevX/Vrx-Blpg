@@ -452,38 +452,47 @@
         reader.readAsDataURL(file);
       }
     }
-
-    function tampilkanBerita() {
-      const beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');
-      const newsArea = document.getElementById("news-area");
-      
-      if (beritaList.length === 0) {
-        newsArea.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">📰</div>
-            <div class="empty-state-text">Belum ada berita. Silahkan posting sesuatu di sini!</div>
-            <button class="btn-primary" onclick="openForm()">✏️ Buat Berita Baru</button>
-          </div>
-        `;
-        return;
-      }
-      
-      let html = '<div style="text-align: center; margin-bottom: 2rem;"><button class="btn-primary" onclick="openForm()">✏️ Tambah Berita Baru</button></div>';
-      
-      beritaList.forEach(berita => {
-        html += `
-          <div class="berita" onclick="editBerita(${berita.id})">
-            ${berita.foto ? `<img src="${berita.foto}" class="berita-image" alt="${berita.judul}">` : ''}
-            <h3>${berita.judul}</h3>
-            <h4>${berita.subjudul}</h4>
-            <p>${berita.deskripsi.substring(0, 200)}${berita.deskripsi.length > 200 ? '...' : ''}</p>
-            <p style="color: #764ba2; font-size: 0.9rem; margin-top: 1rem;">Dibuat atau diedit pada ${berita.tanggal}</p>
-          </div>
-        `;
-      });
-      
-      newsArea.innerHTML = html;
+    
+function tampilkanBerita() {
+  const newsArea = document.getElementById("news-area");
+  
+  database.ref('berita').orderByChild('timestamp').on('value', (snapshot) => {
+    let html = '<div style="text-align: center; margin-bottom: 2rem;"><button class="btn-primary" onclick="openForm()">✏️ Tambah Berita Baru</button></div>';
+    
+    if (!snapshot.exists()) {
+      newsArea.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">📰</div>
+          <div class="empty-state-text">Belum ada berita di Cloud. Silahkan posting!</div>
+          <button class="btn-primary" onclick="openForm()">✏️ Buat Berita Baru</button>
+        </div>`;
+      return;
     }
+
+    snapshot.forEach((childSnapshot) => {
+      const berita = childSnapshot.val();
+      const id = childSnapshot.key;
+      html += `
+        <div class="berita" onclick="editBerita('${id}')">
+          ${berita.foto ? `<img src="${berita.foto}" class="berita-image">` : ''}
+          <h3>${berita.judul}</h3>
+          <p>${berita.deskripsi.substring(0, 100)}...</p>
+          <p style="color: #764ba2; font-size: 0.8rem;">ID Cloud: ${id}</p>
+        </div>`;
+    });
+    newsArea.innerHTML = html;
+  });
+}
+
+function hapusBerita() {
+  if (confirm('Hapus berita ini dari Cloud secara permanen?')) {
+    database.ref('berita/' + editId).remove()
+      .then(() => {
+        alert('🗑️ Berita berhasil dihapus!');
+        closeForm();
+      });
+  }
+}
 
     function greetingMessage() {
       const jam = new Date().getHours();
@@ -590,20 +599,6 @@
   }
 }
 
-
-    function hapusBerita() {
-      if (!confirm('Apakah Anda yakin ingin menghapus berita ini?')) {
-        return;
-      }
-      
-      let beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');
-      beritaList = beritaList.filter(b => b.id !== editId);
-      localStorage.setItem('beritaVRX', JSON.stringify(beritaList));
-      
-      tampilkanBerita();
-      closeForm();
-      alert('🗑️ Berita berhasil dihapus!');
-    }
 
     function logout() {
       if (confirm('Apakah Anda yakin ingin logout?')) {
