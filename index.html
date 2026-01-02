@@ -622,36 +622,37 @@
     }
 
     function tampilkanBeritaDiWebUtama() {
-      const beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');
-      const newsList = document.getElementById("news-list");
-      
-      if (beritaList.length === 0) {
-        newsList.innerHTML = `
-          <div class="berita">
-            <h3>Selamat Datang di Portal Berita VRX</h3>
-            <h4>Update terbaru dari komunitas</h4>
-            <p>Halaman ini akan menampilkan berita dan pengumuman terkini dari Vive Re Xion. Pantau terus untuk informasi kegiatan, event, dan pengumuman penting lainnya.</p>
-          </div>
-        `;
-        return;
-      }
-      
-      let html = '';
-      beritaList.forEach(berita => {
-        const preview = berita.deskripsi.length > 200 ? berita.deskripsi.substring(0, 200) + '...' : berita.deskripsi;
-        html += `
-          <div class="berita" onclick="tampilkanDetail(${berita.id})">
-            ${berita.foto ? `<img src="${berita.foto}" class="berita-image" alt="${berita.judul}">` : ''}
-            <h3>${berita.judul}</h3>
-            <h4>${berita.subjudul}</h4>
-            <p>${preview}</p>
-            <span class="read-more">👉 Tekan untuk baca selengkapnya</span>
-          </div>
-        `;
-      });
-      
-      newsList.innerHTML = html;
+  const newsList = document.getElementById("news-list");
+  
+  database.ref('berita').orderByChild('timestamp').on('value', (snapshot) => {
+    const data = snapshot.val();
+    let html = '';
+    
+    if (!data) {
+      newsList.innerHTML = "<p>Belum ada berita.</p>";
+      return;
     }
+
+    const beritaArray = [];
+    snapshot.forEach((childSnapshot) => {
+      beritaArray.unshift({ id: childSnapshot.key, ...childSnapshot.val() });
+    });
+
+    beritaArray.forEach(berita => {
+      const preview = berita.deskripsi.length > 200 ? berita.deskripsi.substring(0, 200) + '...' : berita.deskripsi;
+      html += `
+        <div class="berita" onclick="tampilkanDetail('${berita.id}')">
+          ${berita.foto ? `<img src="${berita.foto}" class="berita-image">` : ''}
+          <h3>${berita.judul}</h3>
+          <h4>${berita.subjudul}</h4>
+          <p>${preview}</p>
+          <span class="read-more">Tekan untuk baca selengkapnya</span>
+        </div>`;
+    });
+    newsList.innerHTML = html;
+  });
+}
+
 
     function tampilkanDetail(id) {
       const beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');
