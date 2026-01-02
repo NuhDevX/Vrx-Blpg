@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vive Re Xion | Blog</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+
+    /* Overlay untuk depth */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(102,126,234,0.05) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(230,240,255,0.95) 100%);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(102,126,234,0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 2px solid rgba(102,126,234,0.2);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .menu-btn {
+      display: none;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .menu {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+    }
+
+    .menu li {
+      cursor: pointer;
+      padding: 0.5rem 1.5rem;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      color: #667eea;
+      position: relative;
+    }
+
+    .menu li::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transition: width 0.3s ease;
+    }
+
+    .menu li:hover {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+    }
+
+    .menu li:hover::after {
+      width: 80%;
+    }
+
+    /* Content */
+    #content {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page {
+      background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(240,245,255,0.98) 100%);
+      backdrop-filter: blur(20px);
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(102,126,234,0.3);
+      animation: fadeIn 0.5s ease;
+      border: 1px solid rgba(102,126,234,0.2);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      text-shadow: 0 2px 10px rgba(102,126,234,0.1);
+    }
+
+    h2 {
+      color: #667eea;
+      margin: 2rem 0 1rem 0;
+      font-size: 1.8rem;
+      position: relative;
+      padding-left: 1rem;
+    }
+
+    h2::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 80%;
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+      border-radius: 2px;
+    }
+
+    p {
+      line-height: 1.8;
+      color: #4a5568;
+      margin-bottom: 1rem;
+      text-align: justify;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    ul li {
+      padding: 0.8rem 0 0.8rem 2rem;
+      position: relative;
+      color: #4a5568;
+      line-height: 1.6;
+    }
+
+    ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: #667eea;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 2rem;
+      overflow: hidden;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(102,126,234,0.2);
+    }
+
+    th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.2rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    td {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid rgba(102,126,234,0.1);
+      color: #4a5568;
+    }
+
+    tr:nth-child(even) {
+      background: linear-gradient(135deg, rgba(102,126,234,0.03) 0%, rgba(118,75,162,0.03) 100%);
+    }
+
+    tr:hover {
+      background: linear-gradient(135deg, rgba(102,126,234,0.08) 0%, rgba(118,75,162,0.08) 100%);
+      transform: scale(1.01);
+      transition: all 0.3s ease;
+    }
+
+    /* News Area */
+    #news-list {
+      display: grid;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .berita {
+      background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,245,255,0.9) 100%);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(102,126,234,0.2);
+      border-left: 4px solid #667eea;
+      transition: all 0.3s ease;
+    }
+
+    .berita:hover {
+      transform: translateX(10px);
+      box-shadow: 0 8px 30px rgba(102,126,234,0.3);
+    }
+
+    .berita h3 {
+      color: #667eea;
+      margin-bottom: 0.5rem;
+    }
+
+    .berita h4 {
+      color: #764ba2;
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+
+    /* Footer */
+    footer {
+      background: linear-gradient(135deg, rgba(102,126,234,0.95) 0%, rgba(118,75,162,0.95) 100%);
+      backdrop-filter: blur(10px);
+      color: white;
+      text-align: center;
+      padding: 2rem;
+      margin-top: 4rem;
+      box-shadow: 0 -4px 20px rgba(102,126,234,0.3);
+      border-top: 2px solid rgba(255,255,255,0.2);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .menu-btn {
+        display: block;
+      }
+
+      .menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(230,240,255,0.98) 100%);
+        backdrop-filter: blur(10px);
+        flex-direction: column;
+        padding: 1rem;
+        box-shadow: 0 4px 20px rgba(102,126,234,0.3);
+        gap: 0;
+      }
+
+      .menu li {
+        padding: 1rem;
+        border-radius: 10px;
+        margin: 0.2rem 0;
+      }
+
+      .page {
+        padding: 1.5rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo">Vive Re Xion</div>
+    <button class="menu-btn">☰</button>
+    <ul class="menu">
+      <li onclick="showPage('beranda')">Beranda</li>
+      <li onclick="showPage('anggota')">Daftar Anggota</li>
+      <li onclick="showPage('berita')">Berita</li>
+    </ul>
+  </div>
+
+  <!-- Konten -->
+  <div id="content">
+    <!-- Beranda -->
+    <div id="beranda" class="page">
+      <h1>Beranda</h1>
+      <h2>Profil Singkat</h2>
+      <p>Vive Re Xion ( VRX ) adalah organisasi yang berdiri pada bulan Juli tahun 2019, dengan tanggal pendirian resmi yang diaku adalah tanggal 31 Desember 2019.</p>
+      <p>Vive Re Xion adalah organisasi yang berfokus di pengembangan komunitas berbasis media digital seperti WhatsApp Group dan Discord.</p>
+
+      <h2>Visi</h2>
+      <p>Menjadi komunitas digital remaja Indonesia yang inklusif, inovatif, dan memberdayakan setiap anggotanya untuk berkembang dalam era digital.</p>
+
+      <h2>Misi</h2>
+      <ul>
+        <li>Menyediakan ruang komunitas digital yang aman, nyaman, dan kondusif untuk berinteraksi dan berkolaborasi</li>
+        <li>Menjamin kesetaraan derajat dan kesempatan bagi seluruh anggota tanpa memandang latar belakang</li>
+        <li>Mengembangkan kompetensi dan keterampilan digital anggota melalui berbagai program dan kegiatan</li>
+        <li>Membangun jaringan dan koneksi positif antar anggota untuk pertumbuhan bersama</li>
+      </ul>
+
+      <h2>Informasi Kontak</h2>
+      <p><strong>WhatsApp:</strong> 62 851 7714 3283</p>
+      <p><strong>Instagram:</strong> @vrxrealllll</p>
+      <p><strong>Email:</strong> viverexion01@gmail.com</p>
+    </div>
+
+    <!--  Tabel Daftar Anggota -->
+    <div id="anggota" class="page" style="display:none;">
+      <h1>Daftar Anggota, GEN, dan NIY</h1>
+      <h1 style="font-size: 1.8rem; margin-top: -1rem;">Vive Re Xion</h1>
+      
+      <h2>Generasi I</h2>
+      <table>
+        <tr><th>Nama</th><th>NIY</th></tr>
+        <tr><td>Denis</td><td>01012019</td></tr>
+        <tr><td>Adit</td><td>02012019</td></tr>
+      </table>
+
+      <h2>Generasi II</h2>
+      <p style="text-align: center; color: #764ba2; font-style: italic; padding: 1rem; background: rgba(118,75,162,0.1); border-radius: 10px;">Nonaktif</p>
+
+      <h2>Generasi III</h2>
+      <table>
+        <tr><th>Nama</th><th>NIY</th></tr>
+        <tr><td>Revan</td><td>01032020</td></tr>
+        <tr><td>Masnub</td><td>02032020</td></tr>
+        <tr><td>Athan</td><td>03032020</td></tr>
+        <tr><td>Vano</td><td>04032020</td></tr>
+      </table>
+
+      <h2>Generasi IV</h2>
+      <table>
+        <tr><th>Nama</th><th>NIY</th></tr>
+        <tr><td>Fatur</td><td>01042021</td></tr>
+      </table>
+
+      <h2>Generasi V</h2>
+      <table>
+        <tr><th>Nama</th><th>NIY</th></tr>
+        <tr><td>Enzo</td><td>01052022</td></tr>
+        <tr><td>Yuri</td><td>02052022</td></tr>
+        <tr><td>Wizard</td><td>03052022</td></tr>
+        <tr><td>Ganang</td><td>04052022</td></tr>
+        <tr><td>CJ</td><td>05052022</td></tr>
+        <tr><td>Valir</td><td>06052022</td></tr>
+      </table>
+
+      <h2>Generasi VI</h2>
+      <table>
+        <tr><th>Nama</th><th>NIY</th></tr>
+        <tr><td>Tienz</td><td>01062023</td></tr>
+        <tr><td>MiHai</td><td>02062023</td></tr>
+        <tr><td>David</td><td>03062023</td></tr>
+        <tr><td>Viko</td><td>04062023</td></tr>
+      </table>
+
+      <h2>Generasi VII</h2>
+      <table>
+        <tr><th>Nama</th><th>NIY</th></tr>
+        <tr><td>Rafa</td><td>01072024</td></tr>
+      </table>
+
+      <h2>Generasi VIII</h2>
+      <table>
+        <tr><th>Nama</th><th>NIY</th></tr>
+        <tr><td>Rofif</td><td>01082024</td></tr>
+      </table>
+
+      <h2>Generasi IX</h2>
+      <table>
+        <tr><th>Nama</th><th>NIY</th></tr>
+        <tr><td>Trony</td><td>01092025</td></tr>
+        <tr><td>Jevico</td><td>02092025</td></tr>
+      </table>
+
+      <h2>Generasi X</h2>
+      <table>
+        <tr><th>Nama</th><th>NIY</th></tr>
+        <tr><td>Townado</td><td>010102025</td></tr>
+        <tr><td>Ajis</td><td>020102025</td></tr>
+        <tr><td>Phya</td><td>030102025</td></tr>
+        <tr><td>Samuel</td><td>040102025</td></tr>
+      </table>
+    </div>
+
+    <!-- Berita -->
+    <div id="berita" class="page" style="display:none;">
+      <h1>Berita</h1>
+      <div id="news-list">
+        <div class="berita">
+          <h3>Selamat Datang di Portal Berita VRX</h3>
+          <h4>Update terbaru dari komunitas</h4>
+          <p>Halaman ini akan menampilkan berita dan pengumuman terkini dari Vive Re Xion. Pantau terus untuk informasi kegiatan, event, dan pengumuman penting lainnya.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div>[ @vrxrealllll ] - [ viverexion01@gmail.com ] - [ Vive Re Xion ]</div>
+    <div style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.9;">© 2019-2026 Vive Re Xion. All rights reserved.</div>
+  </footer>
+
+  <script>
+    document.querySelector(".menu-btn").addEventListener("click", () => {
+      const menu = document.querySelector(".menu");
+      menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+    });
+
+    function showPage(pageId) {
+      document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+      document.getElementById(pageId).style.display = "block";
+      
+      // Close mobile menu if open
+      if (window.innerWidth <= 768) {
+        document.querySelector(".menu").style.display = "none";
+      }
+    }
+  </script>
+</body>
+  </html>
