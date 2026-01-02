@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Login - Vive Re Xion</title>
+  <title>Vive Re Xion | Admin Login</title>
   <style>
     * {
       margin: 0;
@@ -297,6 +297,11 @@
   <div class="login-container">
     <div class="login-box">
       <div class="logo-section">
+        <div class="header-left">
+          <div class="logo">
+      <img src="https://raw.githubusercontent.com/NuhDevX/Vrx-Blpg/main/img/black-logo.png" alt="VRX Logo" style="height: 30px; vertical-align: middle; margin-right: 10px;">
+      Vive Re Xion
+        </div>
         <div class="logo-text">Vive Re Xion</div>
         <div class="logo-subtitle">Admin Portal</div>
       </div>
@@ -365,7 +370,7 @@
       if (user === "admin" && pass === "vrx123") {
         sessionStorage.setItem('isLoggedIn', 'true');
         sessionStorage.setItem('username', user);
-        window.location.href = "https://vrx-blpg.vercel.app/admin-dashboard/index.html";
+        window.location.href = "https://vrx-blpg.vercel.app/admin-dashboard";
       } else {
         showNotification(
           'Login Gagal!', 
