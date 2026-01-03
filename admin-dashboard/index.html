@@ -1,608 +1,632 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBvf4-bFuSuP0F4JEaXW0bKAhIT-GldeVk",
-    authDomain: "test-ff3f3.firebaseapp.com",
-    databaseURL: "https://test-ff3f3-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "test-ff3f3",
-    storageBucket: "test-ff3f3.firebasestorage.app",
-    messagingSenderId: "934379482470",
-    appId: "1:934379482470:web:856ab893ca34d2ad4d6ca7"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
-</script>
-  
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vive Re Xion | Admin Dashboard</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-      background-attachment: fixed;
-      min-height: 100vh;
-    }
-
-    .header {
-      background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(230,240,255,0.95) 100%);
-      backdrop-filter: blur(10px);
-      padding: 1.5rem 2rem;
-      box-shadow: 0 4px 20px rgba(102,126,234,0.3);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 2px solid rgba(102,126,234,0.2);
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .logo {
-      font-size: 1.5rem;
-      font-weight: bold;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .user-info {
-      background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      color: #667eea;
-      font-weight: 500;
-    }
-
-    .logout-btn {
-      background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
-      color: white;
-      border: none;
-      padding: 0.6rem 1.5rem;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(229,62,62,0.3);
-    }
-
-    .logout-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(229,62,62,0.4);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 0 2rem;
-    }
-
-    .dashboard {
-      background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(240,245,255,0.98) 100%);
-      backdrop-filter: blur(20px);
-      padding: 3rem;
-      border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(102,126,234,0.3);
-      border: 1px solid rgba(102,126,234,0.2);
-      animation: fadeIn 0.5s ease;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .greeting {
-      font-size: 2rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 2rem;
-      text-align: center;
-    }
-
-    #news-area {
-      margin-top: 2rem;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 3rem;
-      background: linear-gradient(135deg, rgba(102,126,234,0.05) 0%, rgba(118,75,162,0.05) 100%);
-      border-radius: 15px;
-      border: 2px dashed rgba(102,126,234,0.3);
-    }
-
-    .empty-state-icon {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-    }
-
-    .empty-state-text {
-      color: #667eea;
-      font-size: 1.1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      padding: 1rem 2rem;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 5px 20px rgba(102,126,234,0.3);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(102,126,234,0.4);
-    }
-
-    #form-area {
-      background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(240,245,255,0.98) 100%);
-      padding: 2rem;
-      border-radius: 15px;
-      margin-top: 2rem;
-      box-shadow: 0 10px 40px rgba(102,126,234,0.3);
-      border: 1px solid rgba(102,126,234,0.2);
-      animation: slideDown 0.4s ease;
-    }
-
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .form-title {
-      font-size: 1.5rem;
-      color: #667eea;
-      margin-bottom: 1.5rem;
-      text-align: center;
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-      display: block;
-      color: #667eea;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    input[type="file"] {
-      width: 100%;
-      padding: 0.8rem;
-      border: 2px dashed rgba(102,126,234,0.3);
-      border-radius: 10px;
-      background: rgba(102,126,234,0.05);
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    input[type="file"]:hover {
-      border-color: #667eea;
-      background: rgba(102,126,234,0.1);
-    }
-
-    input[type="text"],
-    textarea {
-      width: 100%;
-      padding: 1rem;
-      border: 2px solid rgba(102,126,234,0.2);
-      border-radius: 10px;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      background: rgba(255,255,255,0.8);
-      color: #4a5568;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    input[type="text"]:focus,
-    textarea:focus {
-      outline: none;
-      border-color: #667eea;
-      background: white;
-      box-shadow: 0 5px 20px rgba(102,126,234,0.2);
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      margin-top: 1.5rem;
-    }
-
-    .btn-secondary {
-      background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
-      color: #667eea;
-      border: 2px solid #667eea;
-      padding: 0.8rem 1.5rem;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .btn-secondary:hover {
-      background: linear-gradient(135deg, rgba(102,126,234,0.2) 0%, rgba(118,75,162,0.2) 100%);
-      transform: translateY(-2px);
-    }
-
-    .btn-danger {
-      background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
-      color: white;
-      border: none;
-      padding: 0.8rem 1.5rem;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .btn-danger:hover {
-      background: linear-gradient(135deg, #c53030 0%, #9b2c2c 100%);
-      transform: translateY(-2px);
-    }
-
-    .berita {
-      background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,245,255,0.9) 100%);
-      padding: 2rem;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(102,126,234,0.2);
-      border-left: 4px solid #667eea;
-      margin-bottom: 1.5rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      animation: slideDown 0.4s ease;
-    }
-
-    .berita:hover {
-      transform: translateX(10px);
-      box-shadow: 0 8px 30px rgba(102,126,234,0.3);
-    }
-
-    .berita h3 {
-      color: #667eea;
-      margin-bottom: 0.5rem;
-      font-size: 1.5rem;
-    }
-
-    .berita h4 {
-      color: #764ba2;
-      margin-bottom: 1rem;
-      font-weight: 400;
-    }
-
-    .berita p {
-      color: #4a5568;
-      line-height: 1.6;
-    }
-
-    .berita-image {
-      width: 100%;
-      max-height: 300px;
-      object-fit: cover;
-      border-radius: 10px;
-      margin-bottom: 1rem;
-    }
-
-    .image-preview {
-      width: 100%;
-      max-height: 300px;
-      object-fit: cover;
-      border-radius: 10px;
-      margin-top: 1rem;
-      display: none;
-    }
-
-    @media (max-width: 768px) {
-      .header {
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      .header-right {
-        width: 100%;
-        justify-content: space-between;
-      }
-
-      .dashboard {
-        padding: 2rem 1.5rem;
-      }
-
-      .greeting {
-        font-size: 1.5rem;
-      }
-
-      .form-actions {
-        flex-direction: column;
-      }
-
-      .btn-secondary,
-      .btn-primary,
-      .btn-danger {
-        width: 100%;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <div class="header-left">
-      <div class="logo">
-        <img src="https://raw.githubusercontent.com/NuhDevX/Vrx-Blpg/main/img/black-logo.png" alt="VRX Logo" style="height: 30px; vertical-align: middle; margin-right: 10px;">
-        Vive Re Xion
-      </div>
-      <span style="color: #667eea;">• Admin Dashboard</span>
-    </div>
-    <div class="header-right">
-      <div class="user-info">👤 <span id="username-display"></span></div>
-      <button class="logout-btn" onclick="logout()">Logout</button>
-    </div>
-  </div>
-
-  <div class="container">
-    <div class="dashboard">
-      <h2 class="greeting" id="greeting"></h2>
-      <div id="news-area"></div>
-    </div>
-
-    <div id="form-area" style="display:none;">
-      <h3 class="form-title" id="form-title">📝 Buat Berita Baru</h3>
+Kok berita nya tidak bisa nyimpen permanen ya dan juga gak bisa dilihat oleh hp lain      
+<!DOCTYPE html>      
+<html lang="id">      
+<head>      
+  <meta charset="UTF-8">      
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">      
+  <title>Vive Re Xion | Admin Dashboard</title>      
+  <style>      
+    * {      
+      margin: 0;      
+      padding: 0;      
+      box-sizing: border-box;      
+    }      
       
-      <div class="form-group">
-        <label for="foto">📷 Upload Foto (Opsional)</label>
-        <input type="file" id="foto" accept="image/*" onchange="previewImage(event)">
-        <img id="image-preview" class="image-preview" alt="Preview">
-      </div>
+    body {      
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;      
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);      
+      background-attachment: fixed;      
+      min-height: 100vh;      
+    }      
       
-      <div class="form-group">
-        <label for="judul">📌 Judul Berita</label>
-        <input type="text" id="judul" placeholder="Masukkan judul berita...">
-      </div>
+    .header {      
+      background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(230,240,255,0.95) 100%);      
+      backdrop-filter: blur(10px);      
+      padding: 1.5rem 2rem;      
+      box-shadow: 0 4px 20px rgba(102,126,234,0.3);      
+      display: flex;      
+      justify-content: space-between;      
+      align-items: center;      
+      border-bottom: 2px solid rgba(102,126,234,0.2);      
+    }      
       
-      <div class="form-group">
-        <label for="subjudul">📍 Sub Judul</label>
-        <input type="text" id="subjudul" placeholder="Masukkan sub judul...">
-      </div>
+    .header-left {      
+      display: flex;      
+      align-items: center;      
+      gap: 1rem;      
+    }      
       
-      <div class="form-group">
-        <label for="deskripsi">📄 Deskripsi</label>
-        <textarea id="deskripsi" placeholder="Tulis deskripsi berita lengkap di sini..."></textarea>
-      </div>
+    .logo {      
+      font-size: 1.5rem;      
+      font-weight: bold;      
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);      
+      -webkit-background-clip: text;      
+      -webkit-text-fill-color: transparent;      
+      background-clip: text;      
+    }      
       
-      <div class="form-actions">
-        <button class="btn-secondary" onclick="closeForm()">Batalkan</button>
-        <button class="btn-danger" id="btn-hapus" onclick="hapusBerita()" style="display:none;">🗑️ Hapus</button>
-        <button class="btn-primary" onclick="simpanBerita()">🚀 Posting</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    let editMode = false;
-    let editId = null;
-    let currentImageData = null;
-
-    window.addEventListener('DOMContentLoaded', () => {
-      const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-      if (!isLoggedIn || isLoggedIn !== 'true') {
-        window.location.href = 'https://vrx-blpg.vercel.app/admin-login/?error=not_logged_in';
-        return;
-      }
-
-      const username = sessionStorage.getItem('username');
-      if (username) {
-        document.getElementById('username-display').textContent = username;
-      }
-
-      greetingMessage();
-      tampilkanBerita();
-    });
-
-    function previewImage(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          currentImageData = e.target.result;
-          const preview = document.getElementById('image-preview');
-          preview.src = currentImageData;
-          preview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-    
-function tampilkanBerita() {
-  const newsArea = document.getElementById("news-area");
-  let headerHtml = '<div style="text-align: center; margin-bottom: 2rem;"><button class="btn-primary" onclick="openForm()">✏️ Tambah Berita Baru</button></div>';
-  
-  database.ref('berita').orderByChild('timestamp').on('value', (snapshot) => {
-    let contentHtml = '';
-    
-    if (!snapshot.exists()) {
-      contentHtml = `
-        <div class="empty-state">
-          <div class="empty-state-icon">📰</div>
-          <div class="empty-state-text">Belum ada berita di Cloud. Silahkan posting!</div>
-        </div>`;
-    } else {
-      snapshot.forEach((childSnapshot) => {
-        const berita = childSnapshot.val();
-        const id = childSnapshot.key;
-        contentHtml += `
-          <div class="berita" onclick="editBerita('${id}')">
-            ${berita.foto ? `<img src="${berita.foto}" class="berita-image">` : ''}
-            <h3>${berita.judul}</h3>
-            <p>${berita.deskripsi.substring(0, 100)}...</p>
-            <p style="color: #764ba2; font-size: 0.8rem;">ID Cloud: ${id}</p>
-          </div>`;
-      });
-    }
-    newsArea.innerHTML = headerHtml + contentHtml;
-  }, (error) => {
-    console.error("Firebase Error: ", error);
-    newsArea.innerHTML = headerHtml + `<p style="text-align:center; color:red;">Gagal memuat data: ${error.message}</p>`;
-  });
-    }
-  
-function hapusBerita() {
-  if (confirm('Hapus berita ini dari Cloud secara permanen?')) {
-    database.ref('berita/' + editId).remove()
-      .then(() => {
-        alert('🗑️ Berita berhasil dihapus!');
-        closeForm();
-      });
-  }
-}
-
-    function greetingMessage() {
-      const jam = new Date().getHours();
-      let greet = "pagi";
-      let icon = "🌅";
+    .header-right {      
+      display: flex;      
+      align-items: center;      
+      gap: 1rem;      
+    }      
       
-      if (jam >= 10 && jam < 15) {
-        greet = "siang";
-        icon = "☀️";
-      } else if (jam >= 15 && jam < 18) {
-        greet = "sore";
-        icon = "🌤️";
-      } else if (jam >= 18) {
-        greet = "malam";
-        icon = "🌙";
-      }
+    .user-info {      
+      background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);      
+      padding: 0.5rem 1rem;      
+      border-radius: 20px;      
+      color: #667eea;      
+      font-weight: 500;      
+    }      
       
-      const username = sessionStorage.getItem('username') || 'Admin';
-      document.getElementById("greeting").innerHTML = `Hai, ${username}! Selamat ${greet} ${icon}`;
-    }
+    .logout-btn {      
+      background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);      
+      color: white;      
+      border: none;      
+      padding: 0.6rem 1.5rem;      
+      border-radius: 20px;      
+      cursor: pointer;      
+      font-weight: 600;      
+      transition: all 0.3s ease;      
+      box-shadow: 0 4px 15px rgba(229,62,62,0.3);      
+    }      
+      
+    .logout-btn:hover {      
+      transform: translateY(-2px);      
+      box-shadow: 0 6px 20px rgba(229,62,62,0.4);      
+    }      
+      
+    .container {      
+      max-width: 1200px;      
+      margin: 2rem auto;      
+      padding: 0 2rem;      
+    }      
+      
+    .dashboard {      
+      background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(240,245,255,0.98) 100%);      
+      backdrop-filter: blur(20px);      
+      padding: 3rem;      
+      border-radius: 20px;      
+      box-shadow: 0 10px 40px rgba(102,126,234,0.3);      
+      border: 1px solid rgba(102,126,234,0.2);      
+      animation: fadeIn 0.5s ease;      
+    }      
+      
+    @keyframes fadeIn {      
+      from {      
+        opacity: 0;      
+        transform: translateY(20px);      
+      }      
+      to {      
+        opacity: 1;      
+        transform: translateY(0);      
+      }      
+    }      
+      
+    .greeting {      
+      font-size: 2rem;      
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);      
+      -webkit-background-clip: text;      
+      -webkit-text-fill-color: transparent;      
+      background-clip: text;      
+      margin-bottom: 2rem;      
+      text-align: center;      
+    }      
+      
+    #news-area {      
+      margin-top: 2rem;      
+    }      
+      
+    .empty-state {      
+      text-align: center;      
+      padding: 3rem;      
+      background: linear-gradient(135deg, rgba(102,126,234,0.05) 0%, rgba(118,75,162,0.05) 100%);      
+      border-radius: 15px;      
+      border: 2px dashed rgba(102,126,234,0.3);      
+    }      
+      
+    .empty-state-icon {      
+      font-size: 4rem;      
+      margin-bottom: 1rem;      
+    }      
+      
+    .empty-state-text {      
+      color: #667eea;      
+      font-size: 1.1rem;      
+      margin-bottom: 1.5rem;      
+    }      
+      
+    .btn-primary {      
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);      
+      color: white;      
+      border: none;      
+      padding: 1rem 2rem;      
+      border-radius: 12px;      
+      font-size: 1rem;      
+      font-weight: 600;      
+      cursor: pointer;      
+      transition: all 0.3s ease;      
+      box-shadow: 0 5px 20px rgba(102,126,234,0.3);      
+    }      
+      
+    .btn-primary:hover {      
+      transform: translateY(-2px);      
+      box-shadow: 0 8px 30px rgba(102,126,234,0.4);      
+    }      
+      
+    #form-area {      
+      background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(240,245,255,0.98) 100%);      
+      padding: 2rem;      
+      border-radius: 15px;      
+      margin-top: 2rem;      
+      box-shadow: 0 10px 40px rgba(102,126,234,0.3);      
+      border: 1px solid rgba(102,126,234,0.2);      
+      animation: slideDown 0.4s ease;      
+    }      
+      
+    @keyframes slideDown {      
+      from {      
+        opacity: 0;      
+        transform: translateY(-20px);      
+      }      
+      to {      
+        opacity: 1;      
+        transform: translateY(0);      
+      }      
+    }      
+      
+    .form-title {      
+      font-size: 1.5rem;      
+      color: #667eea;      
+      margin-bottom: 1.5rem;      
+      text-align: center;      
+    }      
+      
+    .form-group {      
+      margin-bottom: 1.5rem;      
+    }      
+      
+    .form-group label {      
+      display: block;      
+      color: #667eea;      
+      font-weight: 600;      
+      margin-bottom: 0.5rem;      
+    }      
+      
+    input[type="file"] {      
+      width: 100%;      
+      padding: 0.8rem;      
+      border: 2px dashed rgba(102,126,234,0.3);      
+      border-radius: 10px;      
+      background: rgba(102,126,234,0.05);      
+      cursor: pointer;      
+      transition: all 0.3s ease;      
+    }      
+      
+    input[type="file"]:hover {      
+      border-color: #667eea;      
+      background: rgba(102,126,234,0.1);      
+    }      
+      
+    input[type="text"],      
+    textarea {      
+      width: 100%;      
+      padding: 1rem;      
+      border: 2px solid rgba(102,126,234,0.2);      
+      border-radius: 10px;      
+      font-size: 1rem;      
+      transition: all 0.3s ease;      
+      background: rgba(255,255,255,0.8);      
+      color: #4a5568;      
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;      
+    }      
+      
+    input[type="text"]:focus,      
+    textarea:focus {      
+      outline: none;      
+      border-color: #667eea;      
+      background: white;      
+      box-shadow: 0 5px 20px rgba(102,126,234,0.2);      
+    }      
+      
+    textarea {      
+      min-height: 120px;      
+      resize: vertical;      
+    }      
+      
+    .form-actions {      
+      display: flex;      
+      gap: 1rem;      
+      justify-content: flex-end;      
+      margin-top: 1.5rem;      
+    }      
+      
+    .btn-secondary {      
+      background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);      
+      color: #667eea;      
+      border: 2px solid #667eea;      
+      padding: 0.8rem 1.5rem;      
+      border-radius: 10px;      
+      font-weight: 600;      
+      cursor: pointer;      
+      transition: all 0.3s ease;      
+    }      
+      
+    .btn-secondary:hover {      
+      background: linear-gradient(135deg, rgba(102,126,234,0.2) 0%, rgba(118,75,162,0.2) 100%);      
+      transform: translateY(-2px);      
+    }      
+      
+    .btn-danger {      
+      background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);      
+      color: white;      
+      border: none;      
+      padding: 0.8rem 1.5rem;      
+      border-radius: 10px;      
+      font-weight: 600;      
+      cursor: pointer;      
+      transition: all 0.3s ease;      
+    }      
+      
+    .btn-danger:hover {      
+      background: linear-gradient(135deg, #c53030 0%, #9b2c2c 100%);      
+      transform: translateY(-2px);      
+    }      
+      
+    .berita {      
+      background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,245,255,0.9) 100%);      
+      padding: 2rem;      
+      border-radius: 15px;      
+      box-shadow: 0 5px 20px rgba(102,126,234,0.2);      
+      border-left: 4px solid #667eea;      
+      margin-bottom: 1.5rem;      
+      cursor: pointer;      
+      transition: all 0.3s ease;      
+      animation: slideDown 0.4s ease;      
+    }      
+      
+    .berita:hover {      
+      transform: translateX(10px);      
+      box-shadow: 0 8px 30px rgba(102,126,234,0.3);      
+    }      
+      
+    .berita h3 {      
+      color: #667eea;      
+      margin-bottom: 0.5rem;      
+      font-size: 1.5rem;      
+    }      
+      
+    .berita h4 {      
+      color: #764ba2;      
+      margin-bottom: 1rem;      
+      font-weight: 400;      
+    }      
+      
+    .berita p {      
+      color: #4a5568;      
+      line-height: 1.6;      
+    }      
+      
+    .berita-image {      
+      width: 100%;      
+      max-height: 300px;      
+      object-fit: cover;      
+      border-radius: 10px;      
+      margin-bottom: 1rem;      
+    }      
+      
+    .image-preview {      
+      width: 100%;      
+      max-height: 300px;      
+      object-fit: cover;      
+      border-radius: 10px;      
+      margin-top: 1rem;      
+      display: none;      
+    }      
+      
+    @media (max-width: 768px) {      
+      .header {      
+        flex-direction: column;      
+        gap: 1rem;      
+      }      
+      
+      .header-right {      
+        width: 100%;      
+        justify-content: space-between;      
+      }      
+      
+      .dashboard {      
+        padding: 2rem 1.5rem;      
+      }      
+      
+      .greeting {      
+        font-size: 1.5rem;      
+      }      
+      
+      .form-actions {      
+        flex-direction: column;      
+      }      
+      
+      .btn-secondary,      
+      .btn-primary,      
+      .btn-danger {      
+        width: 100%;      
+      }      
+    }      
+  </style>      
+</head>      
+<body>      
+  <div class="header">      
+    <div class="header-left">      
+      <div class="logo">      
+        <img src="https://raw.githubusercontent.com/NuhDevX/Vrx-Blpg/main/img/black-logo.png" alt="VRX Logo" style="height: 30px; vertical-align: middle; margin-right: 10px;">      
+        Vive Re Xion      
+      </div>      
+      <span style="color: #667eea;">• Admin Dashboard</span>      
+    </div>      
+    <div class="header-right">      
+      <div class="user-info">👤 <span id="username-display"></span></div>      
+      <button class="logout-btn" onclick="logout()">Logout</button>      
+    </div>      
+  </div>      
+      
+  <div class="container">      
+    <div class="dashboard">      
+      <h2 class="greeting" id="greeting"></h2>      
+      <div id="news-area"></div>      
+    </div>      
+      
+    <div id="form-area" style="display:none;">      
+      <h3 class="form-title" id="form-title">📝 Buat Berita Baru</h3>      
+            
+      <div class="form-group">      
+        <label for="foto">📷 Upload Foto (Opsional)</label>      
+        <input type="file" id="foto" accept="image/*" onchange="previewImage(event)">      
+        <img id="image-preview" class="image-preview" alt="Preview">      
+      </div>      
+            
+      <div class="form-group">      
+        <label for="judul">📌 Judul Berita</label>      
+        <input type="text" id="judul" placeholder="Masukkan judul berita...">      
+      </div>      
+            
+      <div class="form-group">      
+        <label for="subjudul">📍 Sub Judul</label>      
+        <input type="text" id="subjudul" placeholder="Masukkan sub judul...">      
+      </div>      
+            
+      <div class="form-group">      
+        <label for="deskripsi">📄 Deskripsi</label>      
+        <textarea id="deskripsi" placeholder="Tulis deskripsi berita lengkap di sini..."></textarea>      
+      </div>      
+            
+      <div class="form-actions">      
+        <button class="btn-secondary" onclick="closeForm()">Batalkan</button>      
+        <button class="btn-danger" id="btn-hapus" onclick="hapusBerita()" style="display:none;">🗑️ Hapus</button>      
+        <button class="btn-primary" onclick="simpanBerita()">🚀 Posting</button>      
+      </div>      
+    </div>      
+  </div>      
+      
+  <script>      
+    let editMode = false;      
+    let editId = null;      
+    let currentImageData = null;      
+      
+    window.addEventListener('DOMContentLoaded', () => {      
+      const isLoggedIn = sessionStorage.getItem('isLoggedIn');      
+      if (!isLoggedIn || isLoggedIn !== 'true') {      
+        window.location.href = 'https://vrx-blpg.vercel.app/admin-login/?error=not_logged_in';      
+        return;      
+      }      
+      
+      const username = sessionStorage.getItem('username');      
+      if (username) {      
+        document.getElementById('username-display').textContent = username;      
+      }      
+      
+      greetingMessage();      
+      tampilkanBerita();      
+    });      
+      
+    function previewImage(event) {      
+      const file = event.target.files[0];      
+      if (file) {      
+        const reader = new FileReader();      
+        reader.onload = function(e) {      
+          currentImageData = e.target.result;      
+          const preview = document.getElementById('image-preview');      
+          preview.src = currentImageData;      
+          preview.style.display = 'block';      
+        };      
+        reader.readAsDataURL(file);      
+      }      
+    }      
+      
+    function tampilkanBerita() {      
+      const beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');      
+      const newsArea = document.getElementById("news-area");      
+            
+      if (beritaList.length === 0) {      
+        newsArea.innerHTML = `      
+          <div class="empty-state">      
+            <div class="empty-state-icon">📰</div>      
+            <div class="empty-state-text">Belum ada berita. Silahkan posting sesuatu di sini!</div>      
+            <button class="btn-primary" onclick="openForm()">✏️ Buat Berita Baru</button>      
+          </div>      
+        `;      
+        return;      
+      }      
+            
+      let html = '<div style="text-align: center; margin-bottom: 2rem;"><button class="btn-primary" onclick="openForm()">✏️ Tambah Berita Baru</button></div>';      
+            
+      beritaList.forEach(berita => {      
+        html += `      
+          <div class="berita" onclick="editBerita(${berita.id})">      
+            ${berita.foto ? `<img src="${berita.foto}" class="berita-image" alt="${berita.judul}">` : ''}      
+            <h3>${berita.judul}</h3>      
+            <h4>${berita.subjudul}</h4>      
+            <p>${berita.deskripsi.substring(0, 200)}${berita.deskripsi.length > 200 ? '...' : ''}</p>      
+            <p style="color: #764ba2; font-size: 0.9rem; margin-top: 1rem;">Dibuat atau diedit pada ${berita.tanggal}</p>      
+          </div>      
+        `;      
+      });      
+            
+      newsArea.innerHTML = html;      
+    }      
+      
+    function greetingMessage() {      
+      const jam = new Date().getHours();      
+      let greet = "pagi";      
+      let icon = "🌅";      
+            
+      if (jam >= 10 && jam < 15) {      
+        greet = "siang";      
+        icon = "☀️";      
+      } else if (jam >= 15 && jam < 18) {      
+        greet = "sore";      
+        icon = "🌤️";      
+      } else if (jam >= 18) {      
+        greet = "malam";      
+        icon = "🌙";      
+      }      
+            
+      const username = sessionStorage.getItem('username') || 'Admin';      
+      document.getElementById("greeting").innerHTML = `Hai, ${username}! Selamat ${greet} ${icon}`;      
+    }      
+      
+    function openForm() {      
+      editMode = false;      
+      editId = null;      
+      currentImageData = null;      
+      document.getElementById("form-title").textContent = "📝 Buat Berita Baru";      
+      document.getElementById("btn-hapus").style.display = "none";      
+      document.getElementById("form-area").style.display = "block";      
+      document.getElementById("form-area").scrollIntoView({ behavior: 'smooth' });      
+    }      
+      
+    function editBerita(id) {      
+      const beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');      
+      const berita = beritaList.find(b => b.id === id);      
+            
+      if (!berita) return;      
+            
+      editMode = true;      
+      editId = id;      
+      currentImageData = berita.foto || null;      
+            
+      document.getElementById("form-title").textContent = "✏️ Edit Berita";      
+      document.getElementById("judul").value = berita.judul;      
+      document.getElementById("subjudul").value = berita.subjudul;      
+      document.getElementById("deskripsi").value = berita.deskripsi;      
+      document.getElementById("btn-hapus").style.display = "inline-block";      
+            
+      const preview = document.getElementById('image-preview');      
+      if (berita.foto) {      
+        preview.src = berita.foto;      
+        preview.style.display = 'block';      
+      } else {      
+        preview.style.display = 'none';      
+      }      
+            
+      document.getElementById("form-area").style.display = "block";      
+      document.getElementById("form-area").scrollIntoView({ behavior: 'smooth' });      
+            
+      const judulSlug = berita.judul.toLowerCase().replace(/[^a-z0-9]+/g, '-');      
+      window.history.pushState({}, '', `/admin-dashboard/edit-berita/${judulSlug}`);      
+    }      
+      
+    function closeForm() {      
+      document.getElementById("form-area").style.display = "none";      
+      document.getElementById("foto").value = "";      
+      document.getElementById("judul").value = "";      
+      document.getElementById("subjudul").value = "";      
+      document.getElementById("deskripsi").value = "";      
+      document.getElementById("image-preview").style.display = "none";      
+      editMode = false;      
+      editId = null;      
+      currentImageData = null;      
+      window.history.pushState({}, '', '/admin-dashboard');      
+    }      
+      
+    function simpanBerita() {      
+      const judul = document.getElementById("judul").value;      
+      const subjudul = document.getElementById("subjudul").value;      
+      const deskripsi = document.getElementById("deskripsi").value;      
+      
+      if (!judul || !subjudul || !deskripsi) {      
+        alert("Mohon lengkapi semua field!");      
+        return;      
+      }      
+      
+      let beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');      
+            
+      if (editMode && editId) {      
+        const index = beritaList.findIndex(b => b.id === editId);      
+        if (index !== -1) {      
+          beritaList[index] = {      
+            ...beritaList[index],      
+            judul: judul,      
+            subjudul: subjudul,      
+            deskripsi: deskripsi,      
+            foto: currentImageData,      
+            tanggal: new Date().toLocaleDateString('id-ID', {       
+              weekday: 'long',       
+              year: 'numeric',       
+              month: 'long',       
+              day: 'numeric',      
+              hour: '2-digit',      
+              minute: '2-digit'      
+            })      
+          };      
+        }      
+      } else {      
+        const beritaBaru = {      
+          id: Date.now(),    
+          judul: judul,      
+          subjudul: subjudul,      
+          deskripsi: deskripsi,      
+          foto: currentImageData,      
+          tanggal: new Date().toLocaleDateString('id-ID', {       
+            weekday: 'long',       
+            year: 'numeric',       
+            month: 'long',       
+            day: 'numeric',      
+            hour: '2-digit',      
+            minute: '2-digit'      
+          })      
+        };      
+        beritaList.unshift(beritaBaru);      
+      }      
+            
+      localStorage.setItem('beritaVRX', JSON.stringify(beritaList));      
+      tampilkanBerita();      
+      closeForm();      
+      alert(editMode ? '✅ Berita berhasil diupdate!' : '✅ Berita berhasil diposting!');      
+    }      
+      
+    function hapusBerita() {      
+      if (!confirm('Apakah Anda yakin ingin menghapus berita ini?')) {      
+        return;      
+      }      
+            
+      let beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');      
+      beritaList = beritaList.filter(b => b.id !== editId);      
+      localStorage.setItem('beritaVRX', JSON.stringify(beritaList));      
+            
+      tampilkanBerita();      
+      closeForm();  
+alert('🗑️ Berita berhasil dihapus!');      
+    }      
+      
+    function logout() {      
+      if (confirm('Apakah Anda yakin ingin logout?')) {      
+        sessionStorage.removeItem('isLoggedIn');      
+        sessionStorage.removeItem('username');      
+        window.location.href = 'https://vrx-blpg.vercel.app/admin-login';      
+      }      
+    }      
+  </script>      
+</body>      
+  </html>      
 
-    function openForm() {
-      editMode = false;
-      editId = null;
-      currentImageData = null;
-      document.getElementById("form-title").textContent = "📝 Buat Berita Baru";
-      document.getElementById("btn-hapus").style.display = "none";
-      document.getElementById("form-area").style.display = "block";
-      document.getElementById("form-area").scrollIntoView({ behavior: 'smooth' });
-    }
-
-    unction editBerita(id) {
-  database.ref('berita/' + id).once('value').then(snapshot => {
-    const berita = snapshot.val();
-    if (!berita) return;
-
-    editMode = true;
-    editId = id;
-    currentImageData = berita.foto || null;
-
-    document.getElementById("judul").value = berita.judul;
-    document.getElementById("subjudul").value = berita.subjudul;
-    document.getElementById("deskripsi").value = berita.deskripsi;
-
-    document.getElementById("btn-hapus").style.display = "inline-block";
-    document.getElementById("form-area").style.display = "block";
-  });
-    }
-
-    function closeForm() {
-      document.getElementById("form-area").style.display = "none";
-      document.getElementById("foto").value = "";
-      document.getElementById("judul").value = "";
-      document.getElementById("subjudul").value = "";
-      document.getElementById("deskripsi").value = "";
-      document.getElementById("image-preview").style.display = "none";
-      editMode = false;
-      editId = null;
-      currentImageData = null;
-      window.history.pushState({}, '', '/admin-dashboard');
-    }
-
-    function simpanBerita() {
-  const judul = document.getElementById("judul").value;
-  const subjudul = document.getElementById("subjudul").value;
-  const deskripsi = document.getElementById("deskripsi").value;
-
-  if (!judul || !subjudul || !deskripsi) {
-    alert("Mohon lengkapi semua field!");
-    return;
-  }
-
-  const tanggal = new Date().toLocaleDateString('id-ID', { 
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-    hour: '2-digit', minute: '2-digit'
-  });
-
-  const dataBerita = {
-    judul, subjudul, deskripsi,
-    foto: currentImageData,
-    tanggal: tanggal,
-    timestamp: Date.now()
-  };
-
-  if (editMode && editId) {
-    database.ref('berita/' + editId).update(dataBerita)
-      .then(() => { alert("Berita Berhasil Diupdate!"); closeForm(); });
-  } else {
-    database.ref('berita').push(dataBerita)
-      .then(() => { alert("Berita Berhasil Diposting!"); closeForm(); });
-  }
-}
-
-
-    function logout() {
-      if (confirm('Apakah Anda yakin ingin logout?')) {
-        sessionStorage.removeItem('isLoggedIn');
-        sessionStorage.removeItem('username');
-        window.location.href = 'https://vrx-blpg.vercel.app/admin-login';
-      }
-    }
-  </script>
-</body>
-  </html>
