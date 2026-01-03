@@ -447,24 +447,23 @@ async function simpanBerita() {
 
   if (editMode && editId) {
     await updateDoc(doc(db, "berita", editId), {
-      judul,
-      subjudul,
-      deskripsi,
-      foto: currentImageData,
-      tanggal: new Date().toLocaleString("id-ID"),
-      createdAt: serverTimestamp()
-    });
-    alert("✅ Berita diupdate");
+  judul,
+  subjudul,
+  deskripsi,
+  foto: currentImageData,
+  tanggal: new Date().toLocaleString("id-ID"),
+});
   } else {
-    await addDoc(collection(db, "berita"), {
-      judul,
-      subjudul,
-      deskripsi,
-      foto: currentImageData,
-      tanggal: new Date().toLocaleString("id-ID"),
-      createdAt: serverTimestamp()
-    });
-    alert("✅ Berita diposting");
+   const now = new Date();
+
+await addDoc(collection(db, "berita"), {
+  judul,
+  subjudul,
+  deskripsi,
+  foto: currentImageData,
+  tanggal: now.toLocaleString("id-ID"),
+  createdAt: now, // ⬅️ PAKAI Date biasa
+});
   }
 
   closeForm();
