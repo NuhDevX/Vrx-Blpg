@@ -455,35 +455,37 @@
     
 function tampilkanBerita() {
   const newsArea = document.getElementById("news-area");
+  let headerHtml = '<div style="text-align: center; margin-bottom: 2rem;"><button class="btn-primary" onclick="openForm()">✏️ Tambah Berita Baru</button></div>';
   
   database.ref('berita').orderByChild('timestamp').on('value', (snapshot) => {
-    let html = '<div style="text-align: center; margin-bottom: 2rem;"><button class="btn-primary" onclick="openForm()">✏️ Tambah Berita Baru</button></div>';
+    let contentHtml = '';
     
     if (!snapshot.exists()) {
-      newsArea.innerHTML = `
+      contentHtml = `
         <div class="empty-state">
           <div class="empty-state-icon">📰</div>
           <div class="empty-state-text">Belum ada berita di Cloud. Silahkan posting!</div>
-          <button class="btn-primary" onclick="openForm()">✏️ Buat Berita Baru</button>
         </div>`;
-      return;
+    } else {
+      snapshot.forEach((childSnapshot) => {
+        const berita = childSnapshot.val();
+        const id = childSnapshot.key;
+        contentHtml += `
+          <div class="berita" onclick="editBerita('${id}')">
+            ${berita.foto ? `<img src="${berita.foto}" class="berita-image">` : ''}
+            <h3>${berita.judul}</h3>
+            <p>${berita.deskripsi.substring(0, 100)}...</p>
+            <p style="color: #764ba2; font-size: 0.8rem;">ID Cloud: ${id}</p>
+          </div>`;
+      });
     }
-
-    snapshot.forEach((childSnapshot) => {
-      const berita = childSnapshot.val();
-      const id = childSnapshot.key;
-      html += `
-        <div class="berita" onclick="editBerita('${id}')">
-          ${berita.foto ? `<img src="${berita.foto}" class="berita-image">` : ''}
-          <h3>${berita.judul}</h3>
-          <p>${berita.deskripsi.substring(0, 100)}...</p>
-          <p style="color: #764ba2; font-size: 0.8rem;">ID Cloud: ${id}</p>
-        </div>`;
-    });
-    newsArea.innerHTML = html;
+    newsArea.innerHTML = headerHtml + contentHtml;
+  }, (error) => {
+    console.error("Firebase Error: ", error);
+    newsArea.innerHTML = headerHtml + `<p style="text-align:center; color:red;">Gagal memuat data: ${error.message}</p>`;
   });
-}
-
+    }
+  
 function hapusBerita() {
   if (confirm('Hapus berita ini dari Cloud secara permanen?')) {
     database.ref('berita/' + editId).remove()
