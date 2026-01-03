@@ -486,25 +486,42 @@ async function tampilkanBerita() {
   const newsArea = document.getElementById("news-area");
 
   if (snapshot.empty) {
-    newsArea.innerHTML = "<p>Belum ada berita</p>";
+    newsArea.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📰</div>
+        <div class="empty-state-text">Belum ada berita</div>
+        <button class="btn-primary" onclick="openForm()">➕ Tambah Berita</button>
+      </div>
+    `;
     return;
   }
 
-  let html = "";
-  snapshot.forEach(docSnap => {
-    const b = docSnap.data();
-    html += `
-      <div class="berita">
-        ${b.foto ? `<img src="${b.foto}" class="berita-image">` : ""}
-        <h3>${b.judul}</h3>
-        <h4>${b.subjudul}</h4>
-        <p>${b.deskripsi.substring(0,200)}...</p>
-        <small>${b.tanggal}</small>
-      </div>
-    `;
-  });
+  let html = `
+    <div style="text-align:right; margin-bottom:20px;">
+      <button class="btn-primary" onclick="openForm()">➕ Tambah Berita</button>
+    </div>
+  `;
 
-  newsArea.innerHTML = html;
+  snapshot.forEach(docSnap => {
+  const b = docSnap.data();
+  const id = docSnap.id;
+
+  html += `
+    <div class="berita">
+      ${b.foto ? `<img src="${b.foto}" class="berita-image">` : ""}
+      <h3>${b.judul}</h3>
+      <h4>${b.subjudul}</h4>
+      <p>${b.deskripsi.substring(0,200)}...</p>
+      <small>${b.tanggal}</small>
+
+      <div style="margin-top:15px;">
+        <button class="btn-secondary" onclick="editBerita('${id}')">✏️ Edit</button>
+        <button class="btn-danger" onclick="hapusBerita('${id}')">🗑️ Hapus</button>
+      </div>
+    </div>
+  `;
+});
+  newsArea.innerHTMl = html;
 }
 window.tampilkanBerita = tampilkanBerita;
   </script>
@@ -574,37 +591,6 @@ window.tampilkanBerita = tampilkanBerita;
       document.getElementById("form-area").scrollIntoView({ behavior: 'smooth' });      
     }      
       
-    function editBerita(id) {      
-      const beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');      
-      const berita = beritaList.find(b => b.id === id);      
-            
-      if (!berita) return;      
-            
-      editMode = true;      
-      editId = id;      
-      currentImageData = berita.foto || null;      
-            
-      document.getElementById("form-title").textContent = "✏️ Edit Berita";      
-      document.getElementById("judul").value = berita.judul;      
-      document.getElementById("subjudul").value = berita.subjudul;      
-      document.getElementById("deskripsi").value = berita.deskripsi;      
-      document.getElementById("btn-hapus").style.display = "inline-block";      
-            
-      const preview = document.getElementById('image-preview');      
-      if (berita.foto) {      
-        preview.src = berita.foto;      
-        preview.style.display = 'block';      
-      } else {      
-        preview.style.display = 'none';      
-      }      
-            
-      document.getElementById("form-area").style.display = "block";      
-      document.getElementById("form-area").scrollIntoView({ behavior: 'smooth' });      
-            
-      const judulSlug = berita.judul.toLowerCase().replace(/[^a-z0-9]+/g, '-');      
-      window.history.pushState({}, '', `/admin-dashboard/edit-berita/${judulSlug}`);      
-    }      
-      
     function closeForm() {      
       document.getElementById("form-area").style.display = "none";      
       document.getElementById("foto").value = "";      
@@ -618,22 +604,6 @@ window.tampilkanBerita = tampilkanBerita;
       window.history.pushState({}, '', '/admin-dashboard');      
     }      
       
-          
-      
-    function hapusBerita() {      
-      if (!confirm('Apakah Anda yakin ingin menghapus berita ini?')) {      
-        return;      
-      }      
-            
-      let beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');      
-      beritaList = beritaList.filter(b => b.id !== editId);      
-      localStorage.setItem('beritaVRX', JSON.stringify(beritaList));      
-            
-      tampilkanBerita();      
-      closeForm();  
-alert('🗑️ Berita berhasil dihapus!');      
-    }      
-      
     function logout() {      
       if (confirm('Apakah Anda yakin ingin logout?')) {      
         sessionStorage.removeItem('isLoggedIn');      
@@ -642,6 +612,65 @@ alert('🗑️ Berita berhasil dihapus!');
       }      
     }      
   </script>      
+  <script type="module">
+import {
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    async function editBerita(id) {
+  const ref = doc(db, "berita", id);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) {
+    alert("Berita tidak ditemukan");
+    return;
+  }
+
+  const berita = snap.data();
+
+  editMode = true;
+  editId = id;
+  currentImageData = berita.foto || null;
+
+  document.getElementById("form-title").textContent = "✏️ Edit Berita";
+  document.getElementById("judul").value = berita.judul;
+  document.getElementById("subjudul").value = berita.subjudul;
+  document.getElementById("deskripsi").value = berita.deskripsi;
+  document.getElementById("btn-hapus").style.display = "inline-block";
+
+  const preview = document.getElementById("image-preview");
+  if (berita.foto) {
+    preview.src = berita.foto;
+    preview.style.display = "block";
+  } else {
+    preview.style.display = "none";
+  }
+
+  document.getElementById("form-area").style.display = "block";
+  document.getElementById("form-area").scrollIntoView({ behavior: "smooth" });
+}
+window.editBerita = editBerita;
+  </script>
+  <script type="module">
+import {
+  deleteDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    async function hapusBerita(id) {
+  if (!confirm("Apakah Anda yakin ingin menghapus berita ini?")) return;
+
+  try {
+    await deleteDoc(doc(db, "berita", id));
+    alert("🗑️ Berita berhasil dihapus!");
+    tampilkanBerita();
+    closeForm();
+  } catch (err) {
+    console.error(err);
+    alert("Gagal menghapus berita");
+  }
+}
+window.hapusBerita = hapusBerita;
+  </script>
 </body>      
   </html>      
 
