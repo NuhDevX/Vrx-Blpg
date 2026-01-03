@@ -3,11 +3,20 @@
 <head>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
   const firebaseConfig = {
-    databaseURL: "https://test-ff3f3.firebaseio.com/"
+    apiKey: "AIzaSyBvf4-bFuSuP0F4JEaXW0bKAhIT-GldeVk",
+    authDomain: "test-ff3f3.firebaseapp.com",
+    databaseURL: "https://test-ff3f3-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "test-ff3f3",
+    storageBucket: "test-ff3f3.firebasestorage.app",
+    messagingSenderId: "934379482470",
+    appId: "1:934379482470:web:856ab893ca34d2ad4d6ca7"
   };
+
   firebase.initializeApp(firebaseConfig);
   const database = firebase.database();
 </script>
@@ -526,35 +535,22 @@ function hapusBerita() {
       document.getElementById("form-area").scrollIntoView({ behavior: 'smooth' });
     }
 
-    function editBerita(id) {
-      const beritaList = JSON.parse(localStorage.getItem('beritaVRX') || '[]');
-      const berita = beritaList.find(b => b.id === id);
-      
-      if (!berita) return;
-      
-      editMode = true;
-      editId = id;
-      currentImageData = berita.foto || null;
-      
-      document.getElementById("form-title").textContent = "✏️ Edit Berita";
-      document.getElementById("judul").value = berita.judul;
-      document.getElementById("subjudul").value = berita.subjudul;
-      document.getElementById("deskripsi").value = berita.deskripsi;
-      document.getElementById("btn-hapus").style.display = "inline-block";
-      
-      const preview = document.getElementById('image-preview');
-      if (berita.foto) {
-        preview.src = berita.foto;
-        preview.style.display = 'block';
-      } else {
-        preview.style.display = 'none';
-      }
-      
-      document.getElementById("form-area").style.display = "block";
-      document.getElementById("form-area").scrollIntoView({ behavior: 'smooth' });
-      
-      const judulSlug = berita.judul.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      window.history.pushState({}, '', `/admin-dashboard/edit-berita/${judulSlug}`);
+    unction editBerita(id) {
+  database.ref('berita/' + id).once('value').then(snapshot => {
+    const berita = snapshot.val();
+    if (!berita) return;
+
+    editMode = true;
+    editId = id;
+    currentImageData = berita.foto || null;
+
+    document.getElementById("judul").value = berita.judul;
+    document.getElementById("subjudul").value = berita.subjudul;
+    document.getElementById("deskripsi").value = berita.deskripsi;
+
+    document.getElementById("btn-hapus").style.display = "inline-block";
+    document.getElementById("form-area").style.display = "block";
+  });
     }
 
     function closeForm() {
