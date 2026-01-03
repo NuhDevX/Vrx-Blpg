@@ -516,12 +516,12 @@ async function tampilkanBerita() {
 
       <div style="margin-top:15px;">
         <button class="btn-secondary" onclick="editBerita('${id}')">✏️ Edit</button>
-        <button class="btn-danger" onclick="hapusBerita('${id}')">🗑️ Hapus</button>
+        <button class="btn-danger" id="btn-hapus" onclick="hapusBerita(editId)">🗑️ Hapus</button>
       </div>
     </div>
   `;
 });
-  newsArea.innerHTMl = html;
+  newsArea.innerHTML = html;
 }
 window.tampilkanBerita = tampilkanBerita;
   </script>
