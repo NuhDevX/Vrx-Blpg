@@ -561,23 +561,24 @@
 
     function greetingMessage() {
       const jam = new Date().getHours();
- 
-      if (jam >= 10 && jam < 15) {
+      let greet, icon;
+    
+      if (jam >= 0 && jam < 10) {
+        greet = "pagi";
+        icon = "🌅";
+      } else if (jam >= 10 && jam < 15) {
         greet = "siang";
         icon = "☀️";
       } else if (jam >= 15 && jam < 18) {
         greet = "sore";
         icon = "🌤️";
-      } else if (jam >= 18 && jam < 00) {
+      } else {
         greet = "malam";
         icon = "🌙";
-      }else if(jam >= 00 && jam < 10) {
-          greet = "pagi"
-         icon = "🌅";
       }
-      
-      const username = sessionStorage.getItem('username') || 'Admin';
-      document.getElementById("greeting").innerHTML = `Hai, ${username}! Selamat ${greet} ${icon}`;
+    
+        const username = sessionStorage.getItem('username') || 'Admin';
+        document.getElementById("greeting").innerHTML = `Hai, ${username}! Selamat ${greet} ${icon}`;
     }
 
     // ===== IMAGE PREVIEW =====
@@ -630,9 +631,9 @@
               <h3>${b.judul}</h3>
               <h4>${b.subjudul}</h4>
               <p>${(() => {
-                const words = b.deskripsi.trim().split(/\\s+/);
-                  return words.length > 7 ? words.slice(0, 7).join(' ') + '........' : b.deskripsi;
-               })()}</p>
+            const words = b.deskripsi.trim().split(/\s+/); // Perbaikan di sini
+            return words.length > 7 ? words.slice(0, 7).join(' ') + '........' : b.deskripsi;
+        })()}</p>
               <small>${b.tanggal}</small>
               <div style="margin-top:15px;">
                 <button class="btn-secondary btn-edit" data-id="${id}">✏️ Edit</button>
