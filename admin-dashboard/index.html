@@ -321,6 +321,61 @@
       margin-top: 1rem;
       display: none;
     }
+
+    /* Notification System */
+    .notification {
+      position: fixed;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      padding: 1.2rem 2rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      z-index: 1000;
+      transition: top 0.4s ease;
+      min-width: 300px;
+      max-width: 90%;
+      border-left: 5px solid #667eea;
+    }
+
+    .notification.show {
+      top: 2rem;
+    }
+
+    .notification.success {
+      border-left-color: #48bb78;
+    }
+
+    .notification.error {
+      border-left-color: #e53e3e;
+    }
+
+    .notification.warning {
+      border-left-color: #ed8936;
+    }
+
+    .notification-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .notification-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .notification-message {
+      color: #4a5568;
+      line-height: 1.5;
+    }
+
+    .notification-title {
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 0.3rem;
+    }
     
     @media (max-width: 768px) {
       .header {
@@ -350,10 +405,26 @@
       .btn-danger {
         width: 100%;
       }
+
+      .notification {
+        min-width: auto;
+        max-width: calc(100% - 2rem);
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Notification Element -->
+  <div id="notification" class="notification">
+    <div class="notification-content">
+      <span class="notification-icon" id="notif-icon">ℹ️</span>
+      <div>
+        <div class="notification-title" id="notif-title">Notifikasi</div>
+        <div class="notification-message" id="notif-message">Pesan notifikasi</div>
+      </div>
+    </div>
+  </div>
+
   <div class="header">
     <div class="header-left">
       <div class="logo">
@@ -439,6 +510,39 @@
     let editId = null;
     let currentImageData = null;
 
+    // ===== NOTIFICATION SYSTEM =====
+    function showNotification(title, message, type = 'success') {
+      const notif = document.getElementById('notification');
+      const notifTitle = document.getElementById('notif-title');
+      const notifMessage = document.getElementById('notif-message');
+      const notifIcon = document.getElementById('notif-icon');
+
+      notif.classList.remove('success', 'error', 'warning');
+
+      if (type === 'success') {
+        notifIcon.textContent = '✅';
+        notif.classList.add('success');
+      } else if (type === 'error') {
+        notifIcon.textContent = '❌';
+        notif.classList.add('error');
+      } else if (type === 'warning') {
+        notifIcon.textContent = '⚠️';
+        notif.classList.add('warning');
+      } else {
+        notifIcon.textContent = 'ℹ️';
+      }
+
+      notifTitle.textContent = title;
+      notifMessage.textContent = message;
+      
+      notif.classList.add('show');
+
+      setTimeout(() => {
+        notif.classList.remove('show');
+      }, 4000);
+    }
+
+    // ===== INIT =====
     window.addEventListener('DOMContentLoaded', () => {
       const isLoggedIn = sessionStorage.getItem('isLoggedIn');
       if (!isLoggedIn || isLoggedIn !== 'true') {
@@ -475,6 +579,7 @@
       document.getElementById("greeting").innerHTML = `Hai, ${username}! Selamat ${greet} ${icon}`;
     }
 
+    // ===== IMAGE PREVIEW =====
     document.getElementById('foto').addEventListener('change', (event) => {
       const file = event.target.files[0];
       if (file) {
@@ -489,6 +594,7 @@
       }
     });
 
+    // ===== DISPLAY NEWS =====
     async function tampilkanBerita() {
       try {
         const q = query(collection(db, "berita"), orderBy("createdAt", "desc"));
@@ -543,10 +649,11 @@
         });
       } catch (error) {
         console.error("Error tampilkan berita:", error);
-        alert("Gagal memuat berita");
+        showNotification('Error', 'Gagal memuat berita. Silakan coba lagi.', 'error');
       }
     }
 
+    // ===== FORM HANDLERS =====
     function openForm() {
       editMode = false;
       editId = null;
@@ -574,13 +681,14 @@
       currentImageData = null;
     }
 
+    // ===== SAVE NEWS =====
     async function simpanBerita() {
       const judul = document.getElementById("judul").value.trim();
       const subjudul = document.getElementById("subjudul").value.trim();
       const deskripsi = document.getElementById("deskripsi").value.trim();
 
       if (!judul || !subjudul || !deskripsi) {
-        alert("Lengkapi semua field!");
+        showNotification('Perhatian!', 'Mohon lengkapi semua field yang diperlukan.', 'warning');
         return;
       }
 
@@ -597,27 +705,28 @@
 
         if (editMode && editId) {
           await updateDoc(doc(db, "berita", editId), dataBerita);
-          alert("✅ Berita berhasil diupdate!");
+          showNotification('Berhasil!', 'Berita berhasil diupdate.', 'success');
         } else {
           await addDoc(collection(db, "berita"), dataBerita);
-          alert("✅ Berita berhasil diposting!");
+          showNotification('Berhasil!', 'Berita baru berhasil diposting.', 'success');
         }
 
         closeForm();
         tampilkanBerita();
       } catch (error) {
         console.error("Error simpan berita:", error);
-        alert("Gagal menyimpan berita");
+        showNotification('Error', 'Gagal menyimpan berita. Silakan coba lagi.', 'error');
       }
     }
 
+    // ===== EDIT NEWS =====
     async function editBerita(id) {
       try {
         const ref = doc(db, "berita", id);
         const snap = await getDoc(ref);
 
         if (!snap.exists()) {
-          alert("Berita tidak ditemukan");
+          showNotification('Error', 'Berita tidak ditemukan.', 'error');
           return;
         }
 
@@ -656,10 +765,11 @@
         document.getElementById("form-area").scrollIntoView({ behavior: "smooth" });
       } catch (error) {
         console.error("Error edit berita:", error);
-        alert("Gagal memuat data berita");
+        showNotification('Error', 'Gagal memuat data berita. Silakan coba lagi.', 'error');
       }
     }
 
+    // ===== DELETE NEWS =====
     async function hapusBerita() {
       if (!editId) return;
       await hapusBeritaDirect(editId);
@@ -667,26 +777,30 @@
     }
 
     async function hapusBeritaDirect(id) {
-      if (!confirm("Apakah Anda yakin ingin menghapus berita ini?")) return;
+      const confirmed = confirm("Apakah Anda yakin ingin menghapus berita ini? Tindakan ini tidak dapat dibatalkan.");
+      if (!confirmed) return;
 
       try {
         await deleteDoc(doc(db, "berita", id));
-        alert("🗑️ Berita berhasil dihapus!");
+        showNotification('Berhasil!', 'Berita berhasil dihapus.', 'success');
         tampilkanBerita();
       } catch (error) {
         console.error("Error hapus berita:", error);
-        alert("Gagal menghapus berita");
+        showNotification('Error', 'Gagal menghapus berita. Silakan coba lagi.', 'error');
       }
     }
 
+    // ===== LOGOUT =====
     function logout() {
-      if (confirm('Apakah Anda yakin ingin logout?')) {
+      const confirmed = confirm('Apakah Anda yakin ingin logout?');
+      if (confirmed) {
         sessionStorage.removeItem('isLoggedIn');
         sessionStorage.removeItem('username');
         window.location.href = 'https://vrx-blpg.vercel.app/admin-login';
       }
     }
 
+    // ===== EVENT LISTENERS =====
     document.getElementById('logout-btn').addEventListener('click', logout);
     document.getElementById('btn-batal').addEventListener('click', closeForm);
     document.getElementById('btn-simpan').addEventListener('click', simpanBerita);
