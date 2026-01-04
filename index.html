@@ -719,7 +719,8 @@
           const id = docSnap.id;
           allBerita.push({ id, ...berita });
           
-          const preview = berita.deskripsi.length > 200 ? berita.deskripsi.substring(0, 200) + '...' : berita.deskripsi;
+          const words = berita.deskripsi.trim().split(/\s+/);
+          const preview = words.length > 7 ? words.slice(0, 7).join(' ') + '........' : berita.deskripsi;
           html += `
             <div class="berita" onclick="tampilkanDetail('${id}', true)">
               ${berita.foto ? `<img src="${berita.foto}" class="berita-image" alt="${berita.judul}">` : ''}
