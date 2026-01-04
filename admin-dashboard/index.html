@@ -628,7 +628,10 @@
               ${b.foto ? `<img src="${b.foto}" class="berita-image">` : ""}
               <h3>${b.judul}</h3>
               <h4>${b.subjudul}</h4>
-              <p>${b.deskripsi.substring(0,200)}${b.deskripsi.length > 200 ? '...' : ''}</p>
+              <p>${(() => {
+                const words = b.deskripsi.trim().split(/\\s+/);
+                  return words.length > 7 ? words.slice(0, 7).join(' ') + '........' : b.deskripsi;
+               })()}</p>
               <small>${b.tanggal}</small>
               <div style="margin-top:15px;">
                 <button class="btn-secondary btn-edit" data-id="${id}">✏️ Edit</button>
