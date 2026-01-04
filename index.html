@@ -450,9 +450,9 @@
     </div>
     <button class="menu-btn" onclick="toggleMenu()">☰</button>
     <ul class="menu">
-      <li onclick="showPage('beranda')">Beranda</li>
-      <li onclick="showPage('anggota')">Daftar Anggota</li>
-      <li onclick="showPage('berita')">Berita</li>
+      <li onclick="navigateTo('/beranda')">Beranda</li>
+      <li onclick="navigateTo('/daftar-anggota')">Daftar Anggota</li>
+      <li onclick="navigateTo('/berita')">Berita</li>
     </ul>
   </div>
 
@@ -586,6 +586,16 @@
       <button class="back-btn" onclick="kembaliKeBerita()">← Kembali ke Berita</button>
       <div id="detail-content"></div>
     </div>
+
+    <div id="error-page" class="page" style="display:none;">
+      <div style="text-align: center;">
+        <div style="font-size: 60px; margin-bottom: 20px; opacity: 0.8;">🔍</div>
+        <h1>404</h1>
+        <h2>Halaman Tidak Ditemukan</h2>
+        <p id="error-message"></p>
+        <button class="back-btn" onclick="navigateTo('/beranda')" style="margin-top: 2rem;">Kembali Ke Halaman Utama</button>
+      </div>
+    </div>
   </div>
 
   <footer>
@@ -620,10 +630,6 @@
 
     let allBerita = [];
 
-    function updateURL(path) {
-      window.history.pushState({}, '', path);
-    }
-
     function slugify(text) {
       return text.toLowerCase()
         .replace(/[^\w\s-]/g, '')
@@ -637,50 +643,74 @@
       menu.style.display = menu.style.display === "flex" ? "none" : "flex";
     }
 
-    function showPage(pageId) {
-      document.querySelectorAll(".page").forEach(p => p.style.display = "none");
-      document.getElementById(pageId).style.display = "block";
-      
-      // Update URL based on page
-      const urlMap = {
-        'beranda': '/beranda',
-        'anggota': '/daftar-anggota',
-        'berita': '/berita'
-      };
-      
-      if (urlMap[pageId]) {
-        updateURL(urlMap[pageId]);
-      }
-      
-      if (pageId === 'berita') {
-        tampilkanBeritaDiWebUtama();
-      }
+    function navigateTo(path) {
+      window.history.pushState({}, '', path);
+      handleRoute();
       
       if (window.innerWidth <= 768) {
         document.querySelector(".menu").style.display = "none";
       }
     }
 
+    function showPage(pageId) {
+      document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+      const page = document.getElementById(pageId);
+      if (page) {
+        page.style.display = "block";
+      }
+      
+      if (pageId === 'berita') {
+        tampilkanBeritaDiWebUtama();
+      }
+    }
+
     function handleRoute() {
       const path = window.location.pathname;
+      const validPaths = ['/', '/beranda', '/daftar-anggota', '/berita', '/admin-login', '/admin-dashboard'];
       
+      // Handle home and beranda
       if (path === '/' || path === '/beranda') {
         showPage('beranda');
-      } else if (path === '/daftar-anggota') {
+      } 
+      // Handle daftar-anggota
+      else if (path === '/daftar-anggota') {
         showPage('anggota');
-      } else if (path === '/berita') {
+      } 
+      // Handle berita list
+      else if (path === '/berita') {
         showPage('berita');
-      } else if (path.startsWith('/berita/detail/')) {
+      } 
+      // Handle berita detail
+      else if (path.startsWith('/berita/detail/')) {
         const slug = path.replace('/berita/detail/', '');
         const berita = allBerita.find(b => slugify(b.judul) === slug);
         if (berita) {
           tampilkanDetail(berita.id, false);
         } else {
-          showPage('berita');
+          showErrorPage(path);
         }
-      } else {
-        showPage('beranda');
       }
+      // Handle admin paths (these might not be implemented yet, but we allow them)
+      else if (path === '/admin-login' || path === '/admin-dashboard') {
+        // For now, redirect to beranda since admin pages aren't implemented
+        navigateTo('/beranda');
+      }
+      // Handle invalid paths
+      else if (!validPaths.includes(path)) {
+        showErrorPage(path);
+      }
+    }
+
+    function showErrorPage(requestedPath) {
+      document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+      document.getElementById("error-page").style.display = "block";
+      
+      const errorMessage = document.getElementById("error-message");
+      errorMessage.textContent = `Ups! Halaman yang Anda cari "${requestedPath}" sepertinya telah hilang. Sumber daya yang diminta tidak dapat ditemukan di server ini.`;
+      
+      // Update URL to /error
+      window.history.replaceState({}, '', '/error');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function tampilkanBeritaDiWebUtama() {
@@ -711,7 +741,7 @@
           
           const preview = berita.deskripsi.length > 200 ? berita.deskripsi.substring(0, 200) + '...' : berita.deskripsi;
           html += `
-            <div class="berita" onclick="tampilkanDetail('${id}')">
+            <div class="berita" onclick="tampilkanDetail('${id}', true)">
               ${berita.foto ? `<img src="${berita.foto}" class="berita-image" alt="${berita.judul}">` : ''}
               <h3>${berita.judul}</h3>
               <h4>${berita.subjudul}</h4>
@@ -734,17 +764,24 @@
       }
     }
 
-    async function tampilkanDetail(id) {
+    async function tampilkanDetail(id, updateURL = true) {
       try {
         const docRef = doc(db, "berita", id);
         const docSnap = await getDoc(docRef);
         
         if (!docSnap.exists()) {
           alert("Berita tidak ditemukan");
+          navigateTo('/berita');
           return;
         }
 
         const berita = docSnap.data();
+        
+        // Update URL with slug
+        if (updateURL) {
+          const slug = slugify(berita.judul);
+          window.history.pushState({}, '', `/berita/detail/${slug}`);
+        }
         
         document.querySelectorAll(".page").forEach(p => p.style.display = "none");
         document.getElementById("detail-berita").style.display = "block";
@@ -763,23 +800,29 @@
       } catch (error) {
         console.error("Error memuat detail berita:", error);
         alert("Gagal memuat detail berita");
+        navigateTo('/berita');
       }
     }
 
     function kembaliKeBerita() {
-      showPage('berita');
+      navigateTo('/berita');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // Make functions global
     window.toggleMenu = toggleMenu;
-    window.showPage = showPage;
+    window.navigateTo = navigateTo;
     window.tampilkanDetail = tampilkanDetail;
     window.kembaliKeBerita = kembaliKeBerita;
 
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', () => {
+      handleRoute();
+    });
+
     // Initialize on page load
     window.addEventListener('DOMContentLoaded', () => {
-      showPage('beranda');
+      handleRoute();
     });
   </script>
 </body>
