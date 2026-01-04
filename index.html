@@ -4,13 +4,448 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vive Re Xion | Blog</title>
-  <link rel="icon" href="/img/favicon.png" type="image/png">  
-  <link rel="stylesheet" href="/tema/utama.css">"
+    <link rel="icon" href="https://raw.githubusercontent.com/NuhDevX/Vrx-Blpg/main/img/favicon.png" type="image/png">  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(102,126,234,0.05) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .navbar {
+      background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(230,240,255,0.95) 100%);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(102,126,234,0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 2px solid rgba(102,126,234,0.2);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .menu-btn {
+      display: none;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .menu {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+    }
+
+    .menu li {
+      cursor: pointer;
+      padding: 0.5rem 1.5rem;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      color: #667eea;
+      position: relative;
+    }
+
+    .menu li::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transition: width 0.3s ease;
+    }
+
+    .menu li:hover {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+    }
+
+    .menu li:hover::after {
+      width: 80%;
+    }
+
+    #content {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page {
+      background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(240,245,255,0.98) 100%);
+      backdrop-filter: blur(20px);
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(102,126,234,0.3);
+      animation: fadeIn 0.5s ease;
+      border: 1px solid rgba(102,126,234,0.2);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      text-shadow: 0 2px 10px rgba(102,126,234,0.1);
+    }
+
+    h2 {
+      color: #667eea;
+      margin: 2rem 0 1rem 0;
+      font-size: 1.8rem;
+      position: relative;
+      padding-left: 1rem;
+    }
+
+    h2::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 80%;
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+      border-radius: 2px;
+    }
+
+    p {
+      line-height: 1.8;
+      color: #4a5568;
+      margin-bottom: 1rem;
+      text-align: justify;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    ul li {
+      padding: 0.8rem 0 0.8rem 2rem;
+      position: relative;
+      color: #4a5568;
+      line-height: 1.6;
+    }
+
+    ul li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: #667eea;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .contact-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 2rem;
+      border-radius: 20px;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      min-width: 200px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .contact-btn:active {
+      transform: scale(0.85);
+    }
+
+    .contact-btn svg {
+      width: 60px;
+      height: 60px;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .contact-btn span {
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .whatsapp-btn {
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      color: white;
+    }
+
+    .whatsapp-btn:hover {
+      background: linear-gradient(135deg, #128C7E 0%, #075E54 100%);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+    }
+
+    .instagram-btn {
+      background: linear-gradient(135deg, #E1306C 0%, #C13584 50%, #833AB4 100%);
+      color: white;
+    }
+
+    .instagram-btn:hover {
+      background: linear-gradient(135deg, #C13584 0%, #833AB4 50%, #5851DB 100%);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(225, 48, 108, 0.4);
+    }
+
+    .gmail-btn {
+      background: linear-gradient(135deg, #EA4335 0%, #FBBC05 25%, #34A853 50%, #4285F4 100%);
+      color: white;
+    }
+
+    .gmail-btn:hover {
+      background: linear-gradient(135deg, #C5221F 0%, #F9AB00 25%, #0F9D58 50%, #3367D6 100%);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(234, 67, 53, 0.4);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 2rem;
+      overflow: hidden;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(102,126,234,0.2);
+    }
+
+    th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.2rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    td {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid rgba(102,126,234,0.1);
+      color: #4a5568;
+    }
+
+    tr:nth-child(even) {
+      background: linear-gradient(135deg, rgba(102,126,234,0.03) 0%, rgba(118,75,162,0.03) 100%);
+    }
+
+    tr:hover {
+      background: linear-gradient(135deg, rgba(102,126,234,0.08) 0%, rgba(118,75,162,0.08) 100%);
+      transform: scale(1.01);
+      transition: all 0.3s ease;
+    }
+
+    #news-list {
+      display: grid;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .berita {
+      background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,245,255,0.9) 100%);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(102,126,234,0.2);
+      border-left: 4px solid #667eea;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .berita:hover {
+      transform: translateX(10px);
+      box-shadow: 0 8px 30px rgba(102,126,234,0.3);
+    }
+
+    .berita h3 {
+      color: #667eea;
+      margin-bottom: 0.5rem;
+    }
+
+    .berita h4 {
+      color: #764ba2;
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+
+    .berita-image {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .read-more {
+      color: #667eea;
+      font-weight: 600;
+      margin-top: 1rem;
+      display: inline-block;
+    }
+
+    .detail-image {
+      width: 100%;
+      max-width: 800px;
+      height: auto;
+      border-radius: 15px;
+      margin: 2rem auto;
+      display: block;
+      box-shadow: 0 5px 20px rgba(102,126,234,0.3);
+    }
+
+    .back-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #667eea;
+      font-size: 1.2rem;
+    }
+
+    footer {
+      background: linear-gradient(135deg, rgba(102,126,234,0.95) 0%, rgba(118,75,162,0.95) 100%);
+      backdrop-filter: blur(10px);
+      color: white;
+      text-align: center;
+      padding: 2rem;
+      margin-top: 4rem;
+      box-shadow: 0 -4px 20px rgba(102,126,234,0.3);
+      border-top: 2px solid rgba(255,255,255,0.2);
+    }
+
+    @media (max-width: 768px) {
+      .menu-btn {
+        display: block;
+      }
+
+      .menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(230,240,255,0.98) 100%);
+        backdrop-filter: blur(10px);
+        flex-direction: column;
+        padding: 1rem;
+        box-shadow: 0 4px 20px rgba(102,126,234,0.3);
+        gap: 0;
+      }
+
+      .menu li {
+        padding: 1rem;
+        border-radius: 10px;
+        margin: 0.2rem 0;
+      }
+
+      .page {
+        padding: 1.5rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      .contact-buttons {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .contact-btn {
+        min-width: 100%;
+      }
+    }
+  </style>    
 </head>
 <body>
   <div class="navbar">
     <div class="logo">
-      <img src="/img/black-logo.png" alt="VRX Logo" style="height: 30px; vertical-align: middle; margin-right: 10px;">
+      <img src="https://raw.githubusercontent.com/NuhDevX/Vrx-Blpg/main/img/black-logo.png" alt="VRX Logo" style="height: 30px; vertical-align: middle; margin-right: 10px;">
       Vive Re Xion
     </div>
     <button class="menu-btn" onclick="toggleMenu()">☰</button>
