@@ -561,18 +561,19 @@
 
     function greetingMessage() {
       const jam = new Date().getHours();
-      let greet = "pagi";
-      let icon = "🌅";
-      
+ 
       if (jam >= 10 && jam < 15) {
         greet = "siang";
         icon = "☀️";
       } else if (jam >= 15 && jam < 18) {
         greet = "sore";
         icon = "🌤️";
-      } else if (jam >= 18) {
+      } else if (jam >= 18 && jam < 00) {
         greet = "malam";
         icon = "🌙";
+      }else if(jam >= 00 && jam < 10) {
+          greet = "pagi"
+         icon = "🌅";
       }
       
       const username = sessionStorage.getItem('username') || 'Admin';
