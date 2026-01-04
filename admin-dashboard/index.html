@@ -435,12 +435,10 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // State variables
     let editMode = false;
     let editId = null;
     let currentImageData = null;
 
-    // Check login status
     window.addEventListener('DOMContentLoaded', () => {
       const isLoggedIn = sessionStorage.getItem('isLoggedIn');
       if (!isLoggedIn || isLoggedIn !== 'true') {
@@ -457,7 +455,6 @@
       tampilkanBerita();
     });
 
-    // Greeting message
     function greetingMessage() {
       const jam = new Date().getHours();
       let greet = "pagi";
@@ -478,7 +475,6 @@
       document.getElementById("greeting").innerHTML = `Hai, ${username}! Selamat ${greet} ${icon}`;
     }
 
-    // Preview image
     document.getElementById('foto').addEventListener('change', (event) => {
       const file = event.target.files[0];
       if (file) {
@@ -493,7 +489,6 @@
       }
     });
 
-    // Display news
     async function tampilkanBerita() {
       try {
         const q = query(collection(db, "berita"), orderBy("createdAt", "desc"));
@@ -539,7 +534,6 @@
 
         newsArea.innerHTML = html;
 
-        // Add event listeners
         document.getElementById('btn-tambah')?.addEventListener('click', openForm);
         document.querySelectorAll('.btn-edit').forEach(btn => {
           btn.addEventListener('click', () => editBerita(btn.dataset.id));
@@ -553,7 +547,6 @@
       }
     }
 
-    // Open form
     function openForm() {
       editMode = false;
       editId = null;
@@ -569,7 +562,6 @@
       document.getElementById("form-area").scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Close form
     function closeForm() {
       document.getElementById("form-area").style.display = "none";
       document.getElementById("foto").value = "";
@@ -582,7 +574,6 @@
       currentImageData = null;
     }
 
-    // Save news
     async function simpanBerita() {
       const judul = document.getElementById("judul").value.trim();
       const subjudul = document.getElementById("subjudul").value.trim();
@@ -620,7 +611,6 @@
       }
     }
 
-    // Edit news
     async function editBerita(id) {
       try {
         const ref = doc(db, "berita", id);
@@ -636,6 +626,17 @@
         editMode = true;
         editId = id;
         currentImageData = berita.foto || null;
+
+        const judulSlug = berita.judul
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-')
+          .trim();
+        
+        const baseUrl = window.location.origin + window.location.pathname.replace(/\/$/, '');
+        const newUrl = `${baseUrl}/edit-berita/${judulSlug}`;
+        window.history.pushState({ editId: id }, '', newUrl);
 
         document.getElementById("form-title").textContent = "✏️ Edit Berita";
         document.getElementById("judul").value = berita.judul;
@@ -659,14 +660,12 @@
       }
     }
 
-    // Delete news (from form)
     async function hapusBerita() {
       if (!editId) return;
       await hapusBeritaDirect(editId);
       closeForm();
     }
 
-    // Delete news (direct)
     async function hapusBeritaDirect(id) {
       if (!confirm("Apakah Anda yakin ingin menghapus berita ini?")) return;
 
@@ -680,7 +679,6 @@
       }
     }
 
-    // Logout
     function logout() {
       if (confirm('Apakah Anda yakin ingin logout?')) {
         sessionStorage.removeItem('isLoggedIn');
@@ -689,7 +687,6 @@
       }
     }
 
-    // Event listeners
     document.getElementById('logout-btn').addEventListener('click', logout);
     document.getElementById('btn-batal').addEventListener('click', closeForm);
     document.getElementById('btn-simpan').addEventListener('click', simpanBerita);
